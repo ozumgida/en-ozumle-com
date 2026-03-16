@@ -1,0 +1,55 @@
+{
+  "id": "p1000",
+  "name": "Erzincan Tulum Cheese 1 kg",
+  "url": "erzincan-tulum-peyniri-1000gr",
+  "images": ["erzincan-tulum-peyniri-1000gr.webp"],
+  "price": 600,
+  "weight": { "value": 1000, "unit": "gr" },
+  "shortDesc": "An authentic flavour with an aromatic and bold character, aged in goatskin — a thousand-year-old tradition brought to modern tables.",
+  "metaDesc": "A true 1-kilogram Erzincan tulum cheese experience, made from the milk of animals fed on the endemic plants of the Munzur Mountains.",
+  "keywords": "Erzincan tulum cheese, kilo tulum cheese, Slow Food, goatskin tulum, 1 kg cheese, Anatolian cheese culture, artisan product, Ozumle food, gourmet cheese, naturally aged",
+  "category": { "name": "Dairy Products", "url": "dairy-products" },
+
+  "longDesc": [
+    "With a history spanning a thousand years, Erzincan tulum is one of the most precious examples of Anatolia's ancient cheese culture.",
+    "An average of 6-7 litres of milk is used for each kilogram, which explains its intense flavour profile.",
+    "The cheese dough, kneaded by hand by master craftsmen, is aged in tulums (bags) made from goatskin.",
+    "The ageing period varies by season; winter cheese ages longer and develops a bolder character.",
+    "Tulums produced at different altitudes in highland pastures show unique characteristics and can be distinguished by tasting experts.",
+    "The 1-kilogram format is ideal for entertaining guests and long-term consumption; it retains its freshness for weeks after opening.",
+    "Protected by the international Slow Food movement, this cheese is an artisanal product passed down through generations.",
+    "Dried fruits, walnuts, and honey mixtures served alongside the cheese balance the complex aromas of tulum cheese.",
+    "In addition to traditional breakfast tables, it can be used in gourmet sandwiches, pasta dishes, and special risotto recipes.",
+    "By purchasing this product, you also contribute to the sustainable economy of local producers and support the preservation of cultural heritage."
+  ],
+
+  "otherDesc": [
+    { "name": "Ingredients", "value": "Milk, rennet, salt", "type": "info" },
+    { "name": "Storage Conditions", "value": "Keep refrigerated below 4°C", "type": "info" },
+    { "name": "Shelf Life", "value": "Consume within 30 days after opening", "type": "info" },
+    { "name": "Milk Type", "value": "Made from sheep, goat, and cow milk", "type": "spec" },
+    { "name": "Fat Content (Dry Matter)", "value": "Minimum 45%", "type": "spec" },
+    { "name": "Salt Content (Dry Matter)", "value": "Maximum 5%", "type": "spec" },
+    { "name": "Ageing Period", "value": "120 days", "type": "spec" },
+    { "name": "Allergen", "value": "Contains lactose", "type": "spec" },
+    { "name": "Calories (100g)", "value": "475 kcal", "type": "nutrition" },
+    { "name": "Fat (100g)", "value": "36.5 g", "type": "nutrition" },
+    { "name": "Protein (100g)", "value": "25 g", "type": "nutrition" },
+    { "name": "Carbohydrate (100g)", "value": "7.5 g", "type": "nutrition" },
+    { "name": "Calcium (100g)", "value": "1050 mg", "type": "nutrition" }
+  ],
+
+  "aggregateRating": {
+    "ratingValue": "5",
+    "reviewCount": "4",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+
+  "review": {
+    "ratingValue": "5",
+    "author": "Fatma Y.",
+    "date": "2026-01-08",
+    "body": "We always buy the 1 kg pack now, the whole family loves it. It's wonderful at breakfast and in pastries. If you're looking for the real taste of Erzincan tulum, this is the right place."
+  }
+}

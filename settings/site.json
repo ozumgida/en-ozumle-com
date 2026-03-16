@@ -1,0 +1,73 @@
+{
+  "domain": "https://en.ozumle.com",
+  "cachePrefix": "ozumle-en",
+  "lang": "en",
+  "langSwitch": [
+    { "label": "TR", "url": "https://ozumle.com", "lang": "tr" },
+    { "label": "EN", "url": "https://en.ozumle.com", "lang": "en" }
+  ],
+  "rootPages": ["index", "404"],
+  "pagesDir": "pages",
+  "productsDir": "products",
+
+  "isCategoryCollapsable": false,
+
+  "offlineWarning":"No internet connection. Please check your network.",
+  "taxIncluded":"Tax Included",
+  "basketWarning": "After adding products to your cart,<br/>click the 'Send Order via WhatsApp' button<br/>to quickly submit your order and shipping details,<br/>and easily complete your purchase.",
+  "whatsAppWarning" : "If you don't use WhatsApp,<br/>you can reach us at info@ozumgida.com for orders and inquiries.",
+  "shippingWarning" : "Free shipping on orders of 15 kg and above.",
+
+  "headerHero": {
+    "img":"hero-header.webp",
+    "text": ["Bringing the traditional flavours of Anatolia",
+             "to your table with a modern touch."],
+    "link": "/pages/urunlerimiz.html",
+    "link_text":"Explore Products"
+  },
+  "footerHero": {
+    "img":"hero-footer.webp",
+    "text":["Preserving the bounty of Erzincan's lands",
+            "with a contemporary culinary approach."],
+    "link": "/pages/lezzetimizin-hikayesi.html",
+    "link_text":"Our Flavour Story",
+    "lazy": true
+  },
+
+  "assets": {
+    "css": ["css/base.css", "css/layout.css",
+            "css/page.css", "css/product.css", "css/basket.css"],
+    "js": ["js/lazy.js", "js/off.js", "js/menu.js", "js/helper.js", "js/basket.js"],
+    "cssOutput": "site.css",
+    "jsOutput": "site.js"
+  },
+
+  "labels": {
+    "pages": "Pages",
+    "products": "Products",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "showOnMap": "Show on Map",
+    "productDescTab": "Product Description",
+    "productSpecsTab": "Product Specifications",
+    "addToBasket": "Add to Cart",
+    "emptyBasket": "Your cart is empty",
+    "productsLinkText": "Our Products",
+    "emptyBasketDesc": "page to browse and add products you like.",
+    "basket": "Cart",
+    "myBasket": "My Cart",
+    "itemSuffix": "item(s)",
+    "for": "for",
+    "openBasket": "Open Cart",
+    "closeBasket": "Close Cart",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "freeShipping": "Free",
+    "total": "Total",
+    "delete": "Delete",
+    "unit": "Qty",
+    "whatsAppOrder": "Send Order via WhatsApp",
+    "whatsAppGreeting": "Hello, I would like to place an order:"
+  }
+}

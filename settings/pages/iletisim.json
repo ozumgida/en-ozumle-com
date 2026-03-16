@@ -1,0 +1,9 @@
+{
+  "title": "Contact Us | Ozum'le Contact Information",
+  "description": "You can easily reach the Ozum'le family for your questions, suggestions, or orders. We are happy to help you.",
+  "keywords": "Ozumle food contact, Erzincan cheese order line, customer service contact, local product order contact",
+  "showOnHeaderMenu": true,
+  "isContactPage": true,
+  "priority": 0.7,
+  "partials": ["article-header", "page-image", "parts", "contact", "article-footer"]
+}

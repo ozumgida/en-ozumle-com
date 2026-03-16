@@ -1,0 +1,89 @@
+{
+  "title": "Personal Data Protection | Ozum'le Privacy Policy",
+  "description": "At Ozum'le, the security and protection of your personal data is our top priority. Review our policies under the Turkish Personal Data Protection Law (KVKK).",
+  "keywords": "Personal data protection, KVKK compliant e-commerce, customer data security, data security standards, data protection in food industry",
+  "showOnFooter": true,
+  "partials": ["article-header", "page-image", "parts", "article-footer"],
+  "parts": [
+    {
+      "title": "PERSONAL DATA PROTECTION (KVKK) DISCLOSURE TEXT",
+      "content": [
+        "This Disclosure Text has been prepared to explain the principles regarding the processing of your personal data obtained through our WhatsApp communication line (0540 906 35 18), directed from our website, by Ozum'le as the data controller, in accordance with the Turkish Personal Data Protection Law No. 6698 (KVKK)."
+      ]
+    },
+    {
+      "title": "1. Data Controller",
+      "content": [
+        "Your personal data is processed by Ozum'le in its capacity as the data controller."
+      ]
+    },
+    {
+      "title": "2. Personal Data Processed",
+      "content": [
+        "The following personal data shared directly by you through our WhatsApp line (0540 906 35 18) may be processed:"
+      ],
+      "list": [
+        "Identity information (name, surname)",
+        "Contact information (phone number, email address)",
+        "Message content, images, videos, voice recordings (if shared by the user)",
+        "Request and complaint information",
+        "Your preferences regarding orders or services"
+      ]
+    },
+    {
+      "title": "3. Purposes of Processing Personal Data",
+      "content": [
+        "Your collected personal data is processed for the following purposes:"
+      ],
+      "list": [
+        "Evaluating your requests and applications",
+        "Managing product and/or service delivery processes",
+        "Managing customer support processes",
+        "Conducting after-sales support and satisfaction processes",
+        "Fulfilling legal obligations"
+      ]
+    },
+    {
+      "title": "4. Method of Collection and Legal Basis",
+      "content": [
+        "Your personal data is collected electronically only through your communication with us via our WhatsApp line (0540 906 35 18), and is processed based on the following legal grounds:"
+      ],
+      "list": [
+        "Being directly related to the establishment or performance of a contract (KVKK Art. 5/2-c)",
+        "Fulfilment of legal obligations (KVKK Art. 5/2-d)",
+        "Establishment, exercise, or protection of a right (KVKK Art. 5/2-e)",
+        "Marketing activities with your explicit consent (KVKK Art. 5/1)"
+      ]
+    },
+    {
+      "title": "5. Transfer of Personal Data",
+      "content": [
+        "Your data may be processed on servers located abroad by the WhatsApp application (Meta Inc.) used as a service. Therefore, your data may be transferred abroad subject to your explicit consent.",
+        "Additionally, data may be transferred to legally authorised public institutions and organisations when deemed necessary."
+      ]
+    },
+    {
+      "title": "6. Rights of the Data Subject",
+      "content": [
+        "Pursuant to Article 11 of the KVKK, regarding your personal data, you have the right to:"
+      ],
+      "list": [
+        "Learn whether your data is being processed",
+        "Request information about the processing if it has been processed",
+        "Learn whether it is being used in accordance with its purpose",
+        "Know the third parties to whom it has been transferred",
+        "Request correction if it has been processed inaccurately or incompletely",
+        "Request deletion/destruction of your data",
+        "Request notification of correction/deletion to third parties",
+        "Object to any adverse outcome arising from analysis by automated systems",
+        "Claim compensation in case of damage."
+      ]
+    },
+    {
+      "title": "",
+      "content": [
+        "To exercise these rights, you may contact us via info@ozumgida.com or directly through our WhatsApp line (0540 906 35 18)."
+      ]
+    }
+  ]
+}

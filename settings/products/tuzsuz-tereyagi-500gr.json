@@ -1,0 +1,53 @@
+{
+  "id": "y500",
+  "name": "Unsalted Butter 500 gr",
+  "url": "tuzsuz-tereyagi-500gr",
+  "images": ["tuzsuz-tereyagi-500gr.webp"],
+  "price": 290,
+  "weight": { "value": 500, "unit": "gr" },
+  "shortDesc": "Ozum'le Pasteurised Unsalted Butter harmonises with your dishes and baked goods, making it an ideal choice with its balanced flavour.",
+  "metaDesc": "A premium unsalted butter containing no additives, perfect for crowning all your special recipes — from French-style pastries to Turkish baklava.",
+  "keywords": "Unsalted butter, pastry butter, baklava butter, patisserie butter, creamy butter, pure butter, 500 gr butter, Ozumle butter, natural cream, premium butter",
+  "category": { "name": "Dairy Products", "url": "dairy-products" },
+
+  "longDesc": [
+    "Made from carefully selected quality milk.",
+    "Its unsalted formula particularly highlights the pure butter flavour in delicate desserts, creamy sauces, and special bakery products.",
+    "From French croissants to Turkish baklava, the crystallisation properties of butter in layered pastries deliver perfect results.",
+    "Its sweet cream taste and silky smooth texture offer a luxurious experience when spread on breakfast bread.",
+    "It melts easily even at low temperatures, providing a homogeneous mixture — this property makes it ideal for delicate sauces like hollandaise and bearnaise.",
+    "In sweet applications such as chocolate ganache, caramel, and cream, the pure butter aroma adds depth to the composition.",
+    "Rich in vitamins A, D, E, and K, its fat-soluble nature facilitates absorption of these vitamins in the body.",
+    "The 500-gram compact packaging is an ideal quantity for both home users and small-scale professional kitchens.",
+    "Called 'golden treasure' by food scientists, unsalted butter should be tasted in its purest form with its own natural flavour."
+  ],
+
+  "otherDesc": [
+    { "name": "Storage Conditions", "value": "Keep refrigerated below 4°C", "type": "info" },
+    { "name": "Shelf Life", "value": "Consume within 15 days after opening", "type": "info" },
+    { "name": "Milk Type", "value": "Made from cow milk cream", "type": "spec" },
+    { "name": "Fat Content", "value": "Minimum 82%", "type": "spec" },
+    { "name": "Salt", "value": "Unsalted", "type": "spec" },
+    { "name": "Production Method", "value": "Pasteurised", "type": "spec" },
+    { "name": "Allergen", "value": "Contains milk and dairy products", "type": "spec" },
+    { "name": "Calories (100g)", "value": "717 kcal", "type": "nutrition" },
+    { "name": "Fat (100g)", "value": "81 g", "type": "nutrition" },
+    { "name": "Saturated Fat (100g)", "value": "51 g", "type": "nutrition" },
+    { "name": "Protein (100g)", "value": "0.85 g", "type": "nutrition" },
+    { "name": "Carbohydrate (100g)", "value": "0.06 g", "type": "nutrition" }
+  ],
+
+  "aggregateRating": {
+    "ratingValue": "5",
+    "reviewCount": "2",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+
+  "review": {
+    "ratingValue": "5",
+    "author": "Hatice B.",
+    "date": "2026-02-03",
+    "body": "It was very hard to find unsalted butter, especially of this quality. I use it with peace of mind in baby food and desserts. Its natural aroma and flavour are worth everything."
+  }
+}

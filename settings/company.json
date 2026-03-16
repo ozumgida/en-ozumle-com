@@ -1,0 +1,34 @@
+{
+  "name": "Ozum Gida Ticaret ve Sanayi",
+  "legalName": "Onur Yigit-Ozum Gida Ticaret ve Sanayi",
+  "address": [
+    "Mimar Sinan Mahallesi",
+    "Uskudar Caddesi No: 1",
+    "YEDPA Ticaret Merkezi F/48",
+    "Atasehir / Istanbul, Turkey"
+  ],
+  "map":"https://maps.app.goo.gl/hVNeyU35MEWc8sGp8",
+  "phone": "+90 540 906 35 18",
+  "email": "info@ozumgida.com",
+  "instagram": "https://www.instagram.com/ozumlelezzetler/",
+  "facebook": "#",
+  "linkedin": "#",
+  "slogan": "Bringing the traditional flavours of Anatolia to your table with a modern touch.",
+  "description": "Ozum'le is a family brand founded to carefully select and deliver the traditional flavours of Anatolia to modern tables.",
+
+  "currency": "TRY",
+  "currencySymbol": "₺",
+  "priceValidUntilDays": 180,
+  "certificate": "TS EN ISO 22000, TS EN ISO 9001",
+
+  "brand": "Ozum'le",
+
+  "manufacturer": {
+    "name": "Sirin Tulum Peynirleri San. Ve Tic. Ltd. Sti.",
+    "identifier": "TR24-0065",
+    "phone": "+904462142403",
+    "address": "Izzetpasa Mah. Caglayan Yolu 2 Km.",
+    "city": "Erzincan",
+    "country": "TR"
+  }
+}

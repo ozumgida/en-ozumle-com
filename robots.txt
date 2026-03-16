@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://en.ozumle.com/sitemap.xml

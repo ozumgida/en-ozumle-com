@@ -1,0 +1,9 @@
+{
+  "title": "Our Products | Ozum'le Erzincan Flavours",
+  "description": "Discover the unique taste of Erzincan Tulum Cheese. Our cheeses, produced using traditional methods from the milk of animals fed on the herbs of high-altitude pastures, add naturalness and richness to your table.",
+  "keywords": "Erzincan Tulum Cheese, traditional cheese, handmade cheese, natural tulum cheese, erzincan local products",
+  "showOnHeaderMenu": true,
+  "isAllProductsPage": true,
+  "priority": 0.7,
+  "partials": ["article-header", "page-image", "parts", "product-cards", "article-footer"]
+}

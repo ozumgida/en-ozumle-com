@@ -1,0 +1,8 @@
+{
+  "title": "Site Map | Ozum'le Website Guide",
+  "description": "Quickly access all pages on the Ozum'le website from one place. Our site map is designed to help you easily find the information you need.",
+  "keywords": "Ozumle site map, Erzincan products website navigation, local food site guide, cheese shopping site structure",
+  "showOnFooter": true,
+  "isSiteMap": true,
+  "partials": ["article-header", "page-image", "parts", "sitemap-list", "article-footer"]
+}

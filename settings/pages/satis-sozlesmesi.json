@@ -1,0 +1,82 @@
+{
+  "title": "Distance Sales Agreement | Ozum'le Legal Information",
+  "description": "Review our distance sales agreement that clearly outlines your rights and our responsibilities during your purchase.",
+  "keywords": "Food product sales agreement, legal consumer rights, consumer protection in e-commerce, cheese purchase legal terms",
+  "showOnFooter": true,
+  "partials": ["article-header", "page-image", "parts", "article-footer"],
+  "parts": [
+    {
+      "title": "1. Parties",
+      "content": [
+        "Seller:"
+      ],
+      "list": [
+        "Company: Onur Yigit-Ozum Gida Ticaret ve Sanayi",
+        "Address: Mimar Sinan Mahallesi Uskudar Caddesi No: 1 YEDPA Ticaret Merkezi F/48 Atasehir / Istanbul",
+        "Phone: 0540 906 35 18",
+        "Email: info@ozumgida.com"
+      ]
+    },
+    {
+      "title": "",
+      "content": [
+        "Buyer: Consumers who add products to their cart on the ozumle.com website, view all taxes and charges, and submit their order by clicking the 'Send Order via WhatsApp' button."
+      ]
+    },
+    {
+      "title": "2. Subject of the Agreement",
+      "content": [
+        "This agreement regulates the rights and obligations of the parties in accordance with the Turkish Consumer Protection Law No. 6502 and relevant regulations, regarding the sale and delivery of products that the Buyer adds to their cart on the Seller's ozumle.com website, views all taxes and charges, and submits their order by clicking the 'Send Order via WhatsApp' button."
+      ]
+    },
+    {
+      "title": "3. Product Information",
+      "content": [
+        "Product(s): Products listed with the specifications and sale prices indicated on the website at the time of ordering.",
+        "All charge details including quantity, price, VAT, and shipping fees have been viewed and confirmed by the Buyer before order confirmation."
+      ]
+    },
+    {
+      "title": "4. Formation of the Agreement and Order Completion",
+      "content": [
+        "After adding products to their cart, the Buyer contacts the Seller via WhatsApp by clicking the 'Send Order via WhatsApp' button on the website. The order is confirmed and completed through this communication channel. All product information and pricing has been viewed and confirmed by the Buyer before this process."
+      ]
+    },
+    {
+      "title": "5. Payment and Delivery",
+      "content": [
+        "The payment method is agreed upon during order confirmation via WhatsApp (e.g., bank transfer, payment link, etc.). Delivery is made to the address specified by the Buyer. Shipping fees are stated on the website. Delivery times and details will be shared via the WhatsApp line."
+      ]
+    },
+    {
+      "title": "6. Right of Withdrawal",
+      "content": [
+        "The consumer generally has the right to withdraw within 14 days in distance sales. However, the right of withdrawal cannot be used for products that are perishable or may expire.",
+        "Therefore, the right of withdrawal is not applicable for the dairy products purchased."
+      ]
+    },
+    {
+      "title": "7. Cases Where the Right of Withdrawal Cannot Be Used",
+      "content": [
+        "The right of withdrawal cannot be used for the following products:"
+      ],
+      "list": [
+        "Products prepared according to the consumer's wishes or personal needs,",
+        "Products that are perishable or may expire,",
+        "Products whose packaging has been opened and cannot be returned for hygiene reasons."
+      ]
+    },
+    {
+      "title": "8. Disputes",
+      "content": [
+        "In case of disputes arising from this agreement, the Consumer Arbitration Committees or Consumer Courts in the Buyer's place of residence shall have jurisdiction."
+      ]
+    },
+    {
+      "title": "9. Enforcement",
+      "content": [
+        "The Buyer declares that they have read, understood, and accepted all the provisions of this agreement when placing an order through the Seller's WhatsApp business account via the website. The agreement enters into force upon confirmation through the Seller's WhatsApp Business Line."
+      ]
+    }
+  ]
+}

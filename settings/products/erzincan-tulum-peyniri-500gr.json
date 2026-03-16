@@ -1,0 +1,54 @@
+{
+  "id": "p500",
+  "name": "Erzincan Tulum Cheese 500 gr",
+  "url": "erzincan-tulum-peyniri-500gr",
+  "images": ["erzincan-tulum-peyniri-500gr.webp"],
+  "price": 300,
+  "weight": { "value": 500, "unit": "gr" },
+  "shortDesc": "Erzincan's unique tulum cheese in a practical half-kilo pack. Add distinction to your table with its natural and intense flavour.",
+  "metaDesc": "With its distinctive sharp aroma and creamy texture, Erzincan tulum cheese is a geographically indicated speciality — the product of a centuries-old tradition.",
+  "keywords": "Erzincan tulum cheese, geographically indicated cheese, 500 gr tulum cheese, traditional cheese, Munzur Mountains cheese, organic cheese, natural fermentation, Ozumle food, Anatolian flavour, probiotic cheese",
+  "category": { "name": "Dairy Products", "url": "dairy-products" },
+
+  "longDesc": [
+    "Erzincan tulum is made from the fresh milk of animals grazing on the meadows at the foot of the Munzur Mountains, and is protected by geographical indication registration.",
+    "The cheese develops its characteristic aroma through 3-6 months of ageing in leather tulums and preservation in natural caves.",
+    "Every bite leaves an unforgettable experience on the palate with its creamy texture and slightly bitter aftertaste.",
+    "Seasonal variation gives each batch subtle differences, making it a true artisanal product.",
+    "This cheese, which reflects the lifestyle of the local people, has also begun to attract the attention of world-renowned chefs in recent years.",
+    "Rich in protein, calcium, and healthy fatty acids, it is not only delicious but also nutritious.",
+    "For the best tasting experience, it should be brought to room temperature before serving and paired with toasted bread, fresh fruits, or honey.",
+    "The microflora that develops during the cheese's ageing carries probiotic properties that support digestion.",
+    "The 500-gram pack is an ideal choice for table consumption and special recipes."
+  ],
+
+  "otherDesc": [
+    { "name": "Ingredients", "value": "Milk, rennet, salt", "type": "info" },
+    { "name": "Storage Conditions", "value": "Keep refrigerated below 4°C", "type": "info" },
+    { "name": "Shelf Life", "value": "Consume within 30 days after opening", "type": "info" },
+    { "name": "Milk Type", "value": "Made from sheep, goat, and cow milk", "type": "spec" },
+    { "name": "Fat Content (Dry Matter)", "value": "Minimum 45%", "type": "spec" },
+    { "name": "Salt Content (Dry Matter)", "value": "Maximum 5%", "type": "spec" },
+    { "name": "Ageing Period", "value": "120 days", "type": "spec" },
+    { "name": "Allergen", "value": "Contains lactose", "type": "spec" },
+    { "name": "Calories (100g)", "value": "475 kcal", "type": "nutrition" },
+    { "name": "Fat (100g)", "value": "36.5 g", "type": "nutrition" },
+    { "name": "Protein (100g)", "value": "25 g", "type": "nutrition" },
+    { "name": "Carbohydrate (100g)", "value": "7.5 g", "type": "nutrition" },
+    { "name": "Calcium (100g)", "value": "1050 mg", "type": "nutrition" }
+  ],
+
+  "aggregateRating": {
+    "ratingValue": "5",
+    "reviewCount": "3",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+
+  "review": {
+    "ratingValue": "5",
+    "author": "Ozge A.",
+    "date": "2025-12-11",
+    "body": "Ozum'le tulum cheese has become a staple on our table. I recommend it to anyone looking for the real taste of Erzincan. My husband loved it too — very practical for breakfast. The taste lingered on our palate..."
+  }
+}

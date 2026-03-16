@@ -1,0 +1,46 @@
+{
+  "title": "Our Flavour Story | Ozum'le Erzincan Flavours",
+  "description": "We preserve the centuries-old tradition of Erzincan Tulum Cheese. Discover the story of our cheeses, ripened by the hands of our master craftsmen in the clean mountain air.",
+  "keywords": "Erzincan cheese tradition, traditional tulum cheese story, Anatolian cheese culture, local food production",
+  "showOnHeaderMenu": true,
+  "priority": 0.7,
+  "partials": ["article-header", "page-image", "parts", "article-footer"],
+  "parts": [
+    {
+      "title": "Cradle of Natural Beauty and Flavours",
+      "content": [
+        "Erzincan is a hidden treasure nestled in the unspoilt lands of Eastern Anatolia, in the east of Turkey.",
+        "With its snow-capped mountains, fertile plains, and deep valleys, this unique geography offers visitors both a visual feast and gifts the world of gastronomy with distinctive tastes.",
+        "These fertile lands, nourished by the Euphrates River, have been home to many civilisations throughout history, blending cultural richness with natural beauty."
+      ]
+    },
+    {
+      "title": "Highland Pastures: The Source of Natural Riches",
+      "content": [
+        "The Erzincan highlands, stretching between the Munzur and Kesis Mountains, are among the region's most valuable natural treasures.",
+        "Highlands such as Ergan, Cayirli, and Otlukbeli are adorned with colourful flowers in spring and transform into lush green carpets in summer.",
+        "The endemic plants and various herbs that grow in these highlands provide natural nourishment for the animals, contributing to the foundation of the region's gastronomy.",
+        "Sheep and goats that graze freely in these high-altitude pastures not only produce quality milk but also lie at the heart of the traditional lifestyle of the local people."
+      ]
+    },
+    {
+      "title": "Erzincan Tulum Cheese: The Pride of the Highlands",
+      "content": [
+        "Erzincan tulum cheese, one of Turkey's geographically indicated products, is the most valuable gastronomic heritage of these lands.",
+        "Made from the milk of herds that ascend to the highlands in May and June, this cheese stands out with its distinctive aroma and characteristic texture.",
+        "Prepared using traditional methods that have been practised for centuries, tulum cheese undergoes natural fermentation while ripening inside goatskin bags, deriving its unique flavour from this process.",
+        "Distinguished by its balanced salt content, creamy texture, and non-crumbling structure, this cheese is both an indispensable part of the table and a nationally recognised symbol of the city."
+      ]
+    },
+    {
+      "title": "In Pursuit of Natural, Additive-Free Flavours",
+      "content": [
+        "The Erzincan highlands are an ideal destination for those who wish to escape the cosmopolitan city life and find peace in the arms of nature.",
+        "A journey to this region offers a holistic experience that delights not only your eyes but also your palate.",
+        "During your highland visits, where you will encounter the hospitality of the local people, you can witness the production processes of handmade products that are part of the cultural heritage.",
+        "Every moment spent in the Erzincan highlands will remind you that a life intertwined with nature, far from the chaos of modern life, is possible, and will leave you with unforgettable memories.",
+        "A highland holiday enriched with activities such as nature walks, photography, and local cuisine workshops offers a unique opportunity to rejuvenate your body and soul."
+      ]
+    }
+  ]
+}

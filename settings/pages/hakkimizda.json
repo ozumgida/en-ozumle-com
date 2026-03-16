@@ -1,0 +1,62 @@
+{
+  "title": "About Us | The Ozum'le Family",
+  "description": "As the Ozum'le family, we bring flavours from the fertile lands of Erzincan to your table using traditional methods passed down from generation to generation. Discover our story and values.",
+  "keywords": "Ozumle food story, Erzincan family business, traditional production company, local food producer, organic cheese production",
+  "showOnHeaderMenu": true,
+  "priority": 0.7,
+  "partials": ["article-header", "page-image", "parts", "article-footer"],
+  "parts": [
+    {
+      "title": "Who We Are",
+      "content": [
+        "Ozum'le is a family brand founded to carefully select and deliver the traditional flavours of Anatolia to modern tables.",
+        "We work to preserve the rich gastronomic heritage of Anatolian lands and connect today's consumers with these precious flavours.",
+        "By honouring the values carried by local products, we aim to present traditional tastes at today's standards."
+      ]
+    },
+    {
+      "title": "Our Mission",
+      "content": [
+        "To bring the rich flavour heritage of Anatolia to today's tables without compromising its naturalness and quality.",
+        "To build a sustainable value chain by collaborating with local producers across Anatolia.",
+        "To offer our customers a unique experience blended with select traditional flavours from trusted sources.",
+        "To contribute to the awareness of healthy eating by making natural, additive-free food more accessible."
+      ]
+    },
+    {
+      "title": "Our Vision",
+      "content": [
+        "To be recognised as a distinctive and strong brand that reinforces trust in local products.",
+        "To share the richness of Anatolian cuisine by introducing the traditional flavours of Erzincan and other regions to wider audiences.",
+        "To grow hand in hand with our local producers, ensuring that traditional tastes are passed on to future generations.",
+        "To reach more people with local flavours by effectively leveraging technology."
+      ]
+    },
+    {
+      "title": "The Story Behind Our Name",
+      "content": [
+        "Our brand name is inspired by the names of our founders.",
+        "At the same time, 'Ozum'le' symbolises that we set out on this journey with our own essence, sincerity, and sense of responsibility.",
+        "Our name underscores our commitment to staying true to the core of our culture and standing behind every flavour we offer to our customers.",
+        "With our brand name, we wanted to reflect our dedication to authenticity and honesty."
+      ]
+    },
+    {
+      "title": "What We Do",
+      "content": [
+        "We source products that combine naturalness, quality, and flavour from trusted suppliers and bring them to you.",
+        "We meticulously select local products such as tulum cheese and butter produced in the highlands of Erzincan, make local flavours accessible through digital platforms, and share information about our products on our social media channels.",
+        "In short, we bring traditional flavours to modern tables."
+      ]
+    },
+    {
+      "title": "What We Believe In",
+      "content": [
+        "At Ozum'le, we respect the effort of local producers and value preserving Anatolia's deep-rooted flavour heritage for future generations.",
+        "Every product we offer carries the responsibility of bearing our brand name, along with your trust.",
+        "We believe that embracing innovative approaches while preserving traditional flavours is the most important element that will advance our brand and products.",
+        "Our commitment to supporting local producers and protecting culinary heritage reflects the core values of our brand."
+      ]
+    }
+  ]
+}

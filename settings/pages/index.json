@@ -1,0 +1,7 @@
+{
+  "title": "Ozum'le | Traditional Flavours of Anatolia",
+  "description": "Ozum'le is a family brand that carefully selects the traditional flavours of Anatolia and brings them to modern tables, preserving recipes passed down through generations.",
+  "keywords": "ozumle, erzincan tulum cheese, butter, cheese, erzincan organic food, natural cheese, traditional erzincan products, anatolian flavours",
+  "priority": 1.0,
+  "partials": ["hero:headerHero", "product-cards", "hero:footerHero"]
+}
