@@ -194,3 +194,87 @@ ul.prd button {
     white-space: nowrap;
   }
 }
+
+/* --- Filter Chip UI --- */
+.filter-ui {
+  margin: 1.5rem 4rem 0;
+}
+
+.filter-cats,
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+
+.chip {
+  padding: .35rem .9rem;
+  border: 1.5px solid var(--c-primary);
+  border-radius: 2rem;
+  background: #fff;
+  color: var(--c-primary);
+  font-size: .88rem;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: var(--c-primary);
+  color: #fff;
+}
+
+/* --- Category Groups --- */
+.cat-group {
+  margin-top: 2rem;
+}
+
+.cat-group > h3 {
+  margin: 0 4rem .75rem;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+details.cat-group {
+  margin-top: 2rem;
+}
+
+details.cat-group > summary {
+  margin: 0 4rem .75rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #444;
+  cursor: pointer;
+}
+
+/* --- Product meta tags (category/tag links on product detail) --- */
+.product-meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  justify-content: center;
+  margin: .25rem 0 .75rem;
+}
+
+.product-meta-tags a {
+  padding: .2rem .7rem;
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  font-size: .82rem;
+  color: #666;
+  text-decoration: none;
+}
+
+.product-meta-tags a:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+@media (max-width: 600px) {
+  .filter-ui {
+    margin: 1rem 0 0;
+  }
+  .cat-group > h3,
+  details.cat-group > summary {
+    margin: 0 0 .75rem;
+  }
+}

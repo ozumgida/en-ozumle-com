@@ -1,0 +1,101 @@
+<h2>Filtre davranışı v2 — taglar her zaman görünür</h2>
+<p class="subtitle">Kategori seçilince taglar güncellenir ama satır her zaman orada</p>
+
+<style>
+  .mockup-body { font-family: sans-serif; padding: 0.75rem; background: #faf9f7; font-size: 0.82rem; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
+  .chip { padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; border: 2px solid #ddd; background: #fff; color: #888; }
+  .chip.cat-on { background: #5c3d2e; color: #fff; border-color: #5c3d2e; }
+  .chip.tag-on { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+  .chip.tag { background: #f5f5f5; color: #777; border-color: #ccc; }
+  .row-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin-bottom: 0.3rem; }
+  .prd-mini { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+  .prd-item { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 0.4rem 0.6rem; min-width: 90px; }
+  .prd-item .n { font-weight: 700; color: #333; font-size: 0.75rem; }
+  .prd-item .m { color: #999; font-size: 0.65rem; margin-top: 0.1rem; }
+  .prd-item.dim { opacity: 0.25; }
+  .all-chip { background: #eee; color: #555; border: 2px solid #ccc; border-radius: 999px; padding: 0.3rem 0.75rem; font-size: 0.78rem; font-weight: 600; }
+  .all-chip.on { background: #555; color: #fff; border-color: #555; }
+  .logic-note { background: #fff8e1; border-left: 3px solid #f9a825; border-radius: 4px; padding: 0.4rem 0.6rem; font-size: 0.75rem; color: #5d4037; margin: 0.5rem 0; }
+  .arrow { text-align:center; font-size: 1.2rem; color: #aaa; margin: 0.5rem 0; }
+</style>
+
+<div class="split">
+
+  <div class="mockup">
+    <div class="mockup-header">Durum 1 — Başlangıç</div>
+    <div class="mockup-body">
+      <div class="row-label">Kategori</div>
+      <div class="filter-row">
+        <span class="all-chip on">Tümü</span>
+        <span class="chip">Peynir</span>
+        <span class="chip">Tereyağı</span>
+      </div>
+      <div class="row-label">Etiket — tüm ürünlerin tagleri</div>
+      <div class="filter-row">
+        <span class="chip tag">Tuzlu</span>
+        <span class="chip tag">Tuzsuz</span>
+        <span class="chip tag">Erzincan</span>
+        <span class="chip tag">500gr</span>
+        <span class="chip tag">1kg</span>
+      </div>
+      <div class="prd-mini">
+        <div class="prd-item"><div class="n">Tulum 1kg</div><div class="m">Peynir · Tuzlu</div></div>
+        <div class="prd-item"><div class="n">Tulum 500g</div><div class="m">Peynir · Tuzlu</div></div>
+        <div class="prd-item"><div class="n">Tuzlu Tereyağ</div><div class="m">Tereyağı · Tuzlu</div></div>
+        <div class="prd-item"><div class="n">Tuzsuz Tereyağ</div><div class="m">Tereyağı · Tuzsuz</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Durum 2 — Kategori seçildi</div>
+    <div class="mockup-body">
+      <div class="row-label">Kategori</div>
+      <div class="filter-row">
+        <span class="all-chip">Tümü</span>
+        <span class="chip cat-on">Peynir</span>
+        <span class="chip">Tereyağı</span>
+      </div>
+      <div class="row-label">Etiket — sadece Peynir tagleri</div>
+      <div class="filter-row">
+        <span class="chip tag">Tuzlu</span>
+        <span class="chip tag">Erzincan</span>
+        <span class="chip tag">500gr</span>
+      </div>
+      <div class="prd-mini">
+        <div class="prd-item"><div class="n">Tulum 1kg</div><div class="m">Peynir · Tuzlu</div></div>
+        <div class="prd-item"><div class="n">Tulum 500g</div><div class="m">Peynir · Tuzlu</div></div>
+        <div class="prd-item dim"><div class="n">Tuzlu Tereyağ</div><div class="m">Tereyağı</div></div>
+        <div class="prd-item dim"><div class="n">Tuzsuz Tereyağ</div><div class="m">Tereyağı</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mockup" style="margin-top:1rem">
+  <div class="mockup-header">Durum 3 — Kategori + tag seçildi</div>
+  <div class="mockup-body">
+    <div class="row-label">Kategori</div>
+    <div class="filter-row">
+      <span class="all-chip">Tümü</span>
+      <span class="chip cat-on">Peynir</span>
+      <span class="chip cat-on">Tereyağı</span>
+    </div>
+    <div class="row-label">Etiket — Peynir + Tereyağı tagleri birleşik</div>
+    <div class="filter-row">
+      <span class="chip tag tag-on">Tuzlu</span>
+      <span class="chip tag">Tuzsuz</span>
+      <span class="chip tag">Erzincan</span>
+      <span class="chip tag">500gr</span>
+    </div>
+    <div class="logic-note">(Peynir veya Tereyağı) VE Tuzlu → 3 ürün</div>
+    <div class="prd-mini">
+      <div class="prd-item"><div class="n">Tulum 1kg</div><div class="m">Peynir · Tuzlu ✓</div></div>
+      <div class="prd-item"><div class="n">Tulum 500g</div><div class="m">Peynir · Tuzlu ✓</div></div>
+      <div class="prd-item"><div class="n">Tuzlu Tereyağ</div><div class="m">Tereyağı · Tuzlu ✓</div></div>
+      <div class="prd-item dim"><div class="n">Tuzsuz Tereyağ</div><div class="m">Tereyağı · Tuzsuz ✗</div></div>
+    </div>
+  </div>
+</div>

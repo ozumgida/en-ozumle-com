@@ -286,12 +286,13 @@ ul.prd button.qty-ctrl,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.35rem 0;
+  padding: 0.5rem;
   font-size: 1rem;
 }
 
 #basket .totals b {
   font-weight: 600;
+  margin-left: 0.3rem;
 }
 
 #basket .totals > small {
@@ -322,6 +323,36 @@ ul.prd button.qty-ctrl,
   margin: 1.25rem auto;
   padding: 1rem 2rem;
   background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+#basket .table-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.75rem auto;
+  max-width: 350px;
+  padding: 0.6rem 1rem;
+  background: #fff3e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e65100;
+}
+
+#basket .tg {
+  display: block;
+  max-width: 350px;
+  margin: 0.5rem auto 1.25rem;
+  padding: 1rem 2rem;
+  background: #229ED9;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -393,4 +424,113 @@ ul.prd button.qty-ctrl,
     width: 35px;
     height: 35px;
   }
+}
+
+#basket .basket-desc-wrap {
+  max-width: 350px;
+  margin: 0.5rem auto;
+}
+
+#basket .basket-desc-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d5c9b5;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  color: #333;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+  background: #fafaf8;
+  transition: border-color 0.2s;
+}
+
+#basket .basket-desc-input:focus {
+  outline: none;
+  border-color: var(--c-accent);
+}
+
+#basket .basket-desc-input::placeholder {
+  color: #b0a090;
+}
+
+#basket .payment-options-wrap {
+  max-width: 350px;
+  margin: 0.75rem auto 0.25rem;
+}
+
+#basket .payment-radios {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem 1rem;
+}
+
+#basket .payment-radios label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: normal;
+  font-size: 0.8rem;
+  color: #444;
+  cursor: pointer;
+}
+
+#basket .payment-radios input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--c-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+#basket .payment-radios input[type="radio"]:checked {
+  background: var(--c-accent);
+}
+
+#basket .campaign-hint {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e65100;
+  background: #fff3e0;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  justify-content: center!important;
+}
+
+#basket .totals .discount {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+#basket .happy-hour-warning {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: center;
+  margin: 0.25rem 0;
+}
+
+#campaigns {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  scrollbar-width: none;
+}
+
+#campaigns::-webkit-scrollbar { display: none; }
+
+#campaigns a { flex-shrink: 0; display: block; }
+
+#campaigns img {
+  height: 80px;
+  width: auto;
+  border-radius: 8px;
+  display: block;
 }

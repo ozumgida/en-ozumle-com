@@ -10,6 +10,7 @@
   "map":"https://maps.app.goo.gl/hVNeyU35MEWc8sGp8",
   "phone": "+90 540 906 35 18",
   "email": "info@ozumgida.com",
+  "telegram": "#",
   "instagram": "https://www.instagram.com/ozumlelezzetler/",
   "facebook": "#",
   "linkedin": "#",
@@ -19,9 +20,10 @@
   "currency": "TRY",
   "currencySymbol": "₺",
   "priceValidUntilDays": 180,
-  "certificate": "TS EN ISO 22000, TS EN ISO 9001",
 
   "brand": "Ozum'le",
+  "timezone": "Europe/Istanbul",
+  "country": "TR",
 
   "manufacturer": {
     "name": "Sirin Tulum Peynirleri San. Ve Tic. Ltd. Sti.",

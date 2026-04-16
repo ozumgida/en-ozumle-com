@@ -6,8 +6,8 @@ let PAGES = __PAGES__;
 self.addEventListener("install", function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(c) { return c.addAll(CORE); })
+      .then(function() { return self.skipWaiting(); })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", function(e) {
@@ -24,13 +24,18 @@ self.addEventListener("activate", function(e) {
 
 self.addEventListener("message", function(e) {
   if (e.data === "cache-all") {
-    caches.open(CACHE).then(function(c) {
-      c.addAll(PRODUCTS).then(function() {
-        return c.addAll(PAGES);
-      }, function() {
-        return c.addAll(PAGES);
-      });
-    });
+    e.waitUntil(
+      caches.open(CACHE).then(function(c) {
+        return c.keys().then(function(keys) {
+          if (keys.length > CORE.length) { return; }
+          return c.addAll(PRODUCTS).then(function() {
+            return c.addAll(PAGES);
+          }, function() {
+            return c.addAll(PAGES);
+          });
+        });
+      })
+    );
   }
 });
 

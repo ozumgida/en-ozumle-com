@@ -155,3 +155,132 @@ article > h4 {
     border-radius: 0;
   }
 }
+
+article > section {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-block: 1rem;
+}
+
+article > section > img {
+  width: 200px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+  border: none;
+}
+
+article > section > div > h3 {
+  padding-block: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  line-height: 1.8rem;
+}
+
+article > section > div > p {
+  padding-block: 0.5rem;
+  font-size: 1.1rem;
+  line-height: 1.5rem;
+}
+
+article > section > div > ul {
+  padding-left: 1.5rem;
+}
+
+article > section > div > ul > li {
+  padding-block: 0.5rem;
+  list-style: square;
+}
+
+@media (max-width: 600px) {
+  article > section {
+    flex-direction: column;
+  }
+
+  article > section > img {
+    width: 100%;
+    height: 200px;
+  }
+}
+
+#staff-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 360px;
+  margin: 2rem auto;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+
+#staff-form h2 {
+  width: 100%;
+  text-align: left;
+  font-weight: bold;
+}
+
+#staff-form input {
+  width: 100%;
+  padding: .75rem 1rem;
+  font-size: 1.1rem;
+  border: 1.5px solid #ddd;
+  border-radius: .5rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+#staff-form input:focus {
+  border-color: var(--c-primary);
+}
+
+#staff-form button {
+  width: 100%;
+  padding: .75rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: var(--c-primary);
+  color: #fff;
+  border: none;
+  border-radius: .5rem;
+  cursor: pointer;
+}
+
+#staff-form p,
+#staff-menu-link {
+  text-align: left;
+}
+
+#staff-form p {
+  font-size: 1.2rem;
+  color: var(--c-primary);
+  min-height: 1.5rem;
+}
+
+.campaign-strip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 4rem -2rem 2rem;
+  padding: 1rem 2rem;
+  background: #f59e0b;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.campaign-strip::-webkit-scrollbar { display: none; }
+
+.campaign-strip a { display: block; flex-shrink: 0; }
+
+.campaign-strip img {
+  display: block;
+  height: 140px;
+  width: auto;
+  border-radius: 8px;
+  cursor: pointer;
+}

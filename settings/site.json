@@ -6,17 +6,20 @@
     { "label": "TR", "url": "https://ozumle.com", "lang": "tr" },
     { "label": "EN", "url": "https://en.ozumle.com", "lang": "en" }
   ],
-  "rootPages": ["index", "404"],
+  "rootPages": ["index", "404", "menu", "staff"],
   "pagesDir": "pages",
   "productsDir": "products",
 
   "isCategoryCollapsable": false,
+  "isFiltering": false,
+  "isTelegramOrder": false,
+  "isBasketDesc": false,
+  "paymentOptions": ["Ödeme Linki"],
 
   "offlineWarning":"No internet connection. Please check your network.",
   "taxIncluded":"Tax Included",
   "basketWarning": "After adding products to your cart,<br/>click the 'Send Order via WhatsApp' button<br/>to quickly submit your order and shipping details,<br/>and easily complete your purchase.",
   "whatsAppWarning" : "If you don't use WhatsApp,<br/>you can reach us at info@ozumgida.com for orders and inquiries.",
-  "shippingWarning" : "Free shipping on orders of 15 kg and above.",
 
   "headerHero": {
     "img":"hero-header.webp",
@@ -37,9 +40,11 @@
   "assets": {
     "css": ["css/base.css", "css/layout.css",
             "css/page.css", "css/product.css", "css/basket.css"],
-    "js": ["js/lazy.js", "js/off.js", "js/menu.js", "js/helper.js", "js/basket.js"],
+    "js": ["js/lazy.js", "js/off.js", "js/navmenu.js", "js/helper.js", "js/basket.js"],
     "cssOutput": "site.css",
-    "jsOutput": "site.js"
+    "jsOutput": "site.js",
+    "menuCss": "css/menu.css",
+    "menuCssOutput": "menu.css"
   },
 
   "labels": {
@@ -68,6 +73,20 @@
     "delete": "Delete",
     "unit": "Qty",
     "whatsAppOrder": "Send Order via WhatsApp",
-    "whatsAppGreeting": "Hello, I would like to place an order:"
+    "whatsAppGreeting": "🛒 Order Details",
+    "telegramOrder": "Send Order via Telegram",
+    "telegramGreeting": "🛒 Order Details",
+    "waiterLabel": "Waiter",
+    "tableLabel": "Table",
+    "filterAll": "All",
+    "categories": "Categories",
+    "tags": "Tags",
+    "basketDescPlaceholder": "Add a note (optional)",
+    "basketDescTooltip": "If you have anything more to specify, you can also message us directly on WhatsApp.",
+    "paymentLabel": "Payment Method",
+    "noteLabel": "Note",
+    "happyHourTimezoneWarning": "This discount is based on restaurant time. Your device clock may differ.",
+    "discountProgressPrefix": "more for a",
+    "discountProgressSuffix": "discount"
   }
 }

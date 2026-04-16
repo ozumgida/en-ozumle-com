@@ -76,11 +76,13 @@ nav a.active {
     border-radius: 0 0 1rem 1rem;
     transform: translateX(-50%) scale(0);
     transform-origin: center top;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, visibility 0.3s ease;
+    visibility: hidden;
   }
 
   nav.open > div {
     transform: translateX(-50%) scale(1);
+    visibility: visible;
   }
 
   nav > div > a {

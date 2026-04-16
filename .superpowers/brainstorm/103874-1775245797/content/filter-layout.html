@@ -1,0 +1,119 @@
+<h2>Filtre UI — 3 yaklaşım</h2>
+<p class="subtitle">Birden fazla kategori + OR tag seçimi. Hangisi daha uygun?</p>
+
+<style>
+  .mockup-body { font-family: sans-serif; padding: 1rem; background: #faf9f7; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
+  .chip { padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 2px solid #ddd; background: #fff; color: #555; }
+  .chip.cat-active { background: #5c3d2e; color: #fff; border-color: #5c3d2e; }
+  .chip.tag-active { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+  .chip.tag { border-color: #ccc; color: #666; background: #f5f5f5; }
+  .divider { width: 100%; height: 1px; background: #e0e0e0; margin: 0.5rem 0; }
+  .prd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
+  .prd-card { background: #fff; border-radius: 8px; padding: 0.6rem; font-size: 0.75rem; border: 1px solid #eee; }
+  .prd-card .name { font-weight: 700; color: #333; margin-bottom: 0.2rem; }
+  .prd-card .meta { color: #888; font-size: 0.68rem; }
+  .prd-card .price { color: #5c3d2e; font-weight: 700; margin-top: 0.3rem; }
+  /* B */
+  .filter-bar { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.6rem 0; border-bottom: 1px solid #eee; margin-bottom: 0.75rem; }
+  .filter-btn { background: #5c3d2e; color: #fff; border: none; border-radius: 6px; padding: 0.4rem 0.9rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+  .active-chip { background: #5c3d2e22; color: #5c3d2e; border: 1px solid #5c3d2e55; border-radius: 999px; padding: 0.25rem 0.7rem; font-size: 0.78rem; font-weight: 600; }
+  .active-chip.tag-chip { background: #e8f5e922; color: #2e7d32; border-color: #2e7d3255; }
+  /* C */
+  .flat-group { margin-bottom: 0.6rem; }
+  .flat-label { font-size: 0.7rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+  .chip.big { font-size: 0.88rem; padding: 0.45rem 1rem; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>İki satır chip — kategori üstte, tag altta</h3>
+      <p>Kategori seçince ilgili taglar ikinci satırda belirir. Net hiyerarşi.</p>
+      <div class="mockup" style="margin-top:0.75rem">
+        <div class="mockup-header">Ürünlerimiz</div>
+        <div class="mockup-body">
+          <div class="filter-row">
+            <span class="chip cat-active">Süt Ürünleri</span>
+            <span class="chip cat-active">Peynir</span>
+            <span class="chip">Tereyağı</span>
+          </div>
+          <div class="filter-row">
+            <span class="chip tag tag-active">Tuzlu</span>
+            <span class="chip tag tag-active">Erzincan</span>
+            <span class="chip tag">Tuzsuz</span>
+            <span class="chip tag">500gr</span>
+          </div>
+          <div class="prd-grid">
+            <div class="prd-card"><div class="name">Tulum Peyniri 1kg</div><div class="meta">Tuzlu · Erzincan</div><div class="price">600 ₺</div></div>
+            <div class="prd-card"><div class="name">Tulum Peyniri 500g</div><div class="meta">Tuzlu · 500gr</div><div class="price">350 ₺</div></div>
+            <div class="prd-card"><div class="name">Tulum Lor</div><div class="meta">Erzincan</div><div class="price">280 ₺</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Filtre butonu + aktif seçimler chip olarak</h3>
+      <p>Filtreler gizli panelde. Seçilen filtreler üstte chip gösterir, temizlenebilir. Temiz görünüm ama bir tıklama daha fazla.</p>
+      <div class="mockup" style="margin-top:0.75rem">
+        <div class="mockup-header">Ürünlerimiz</div>
+        <div class="mockup-body">
+          <div class="filter-bar">
+            <button class="filter-btn">⚙ Filtrele</button>
+            <span class="active-chip">Süt Ürünleri ×</span>
+            <span class="active-chip">Peynir ×</span>
+            <span class="active-chip tag-chip">Tuzlu ×</span>
+            <span class="active-chip tag-chip">Erzincan ×</span>
+          </div>
+          <div class="prd-grid">
+            <div class="prd-card"><div class="name">Tulum Peyniri 1kg</div><div class="meta">Tuzlu · Erzincan</div><div class="price">600 ₺</div></div>
+            <div class="prd-card"><div class="name">Tulum Peyniri 500g</div><div class="meta">Tuzlu</div><div class="price">350 ₺</div></div>
+            <div class="prd-card"><div class="name">Tulum Lor</div><div class="meta">Erzincan</div><div class="price">280 ₺</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Düz chip — kategori ve taglar ayrı gruplar halinde yan yana</h3>
+      <p>Kategori ve tag satırları her zaman görünür, bağımsız. Basit, hep açık.</p>
+      <div class="mockup" style="margin-top:0.75rem">
+        <div class="mockup-header">Ürünlerimiz</div>
+        <div class="mockup-body">
+          <div class="flat-group">
+            <div class="flat-label">Kategori</div>
+            <div class="filter-row">
+              <span class="chip big cat-active">Süt Ürünleri</span>
+              <span class="chip big cat-active">Peynir</span>
+              <span class="chip big">Tereyağı</span>
+            </div>
+          </div>
+          <div class="flat-group">
+            <div class="flat-label">Etiket</div>
+            <div class="filter-row">
+              <span class="chip tag tag-active">Tuzlu</span>
+              <span class="chip tag">Tuzsuz</span>
+              <span class="chip tag tag-active">Erzincan</span>
+              <span class="chip tag">500gr</span>
+              <span class="chip tag">1kg</span>
+            </div>
+          </div>
+          <div class="prd-grid">
+            <div class="prd-card"><div class="name">Tulum Peyniri 1kg</div><div class="meta">Tuzlu · Erzincan</div><div class="price">600 ₺</div></div>
+            <div class="prd-card"><div class="name">Tulum Peyniri 500g</div><div class="meta">Tuzlu</div><div class="price">350 ₺</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,23 @@
+{
+  "campaigns": [
+    {
+      "type": "free_shipping",
+      "active": true,
+      "img": "free-shiping-over-15kg.png",
+      "addProducts": [
+        { "id": "p1000", "qty": 6 },
+        { "id": "p500",  "qty": 6 },
+        { "id": "yt900", "qty": 4 },
+        { "id": "y500",  "qty": 5 }
+      ],
+      "conditions": [
+        {
+          "minWeight": 15,
+          "hintTemplate": "Add {remaining} kg more for free shipping!"
+        }
+      ],
+      "label": "Free Shipping on orders of 15 kg and above!",
+      "messageLine": "Free Shipping Campaign"
+    }
+  ]
+}

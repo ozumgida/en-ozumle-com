@@ -1,649 +1,154 @@
 #!/bin/bash
 
-# --- CLI Arguments ---
 TEMPLATE_DIR="template"
 SETTINGS_DIR="settings"
 OUTPUT_DIR="."
 
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --template) TEMPLATE_DIR="$2"; shift 2;;
-    --settings) SETTINGS_DIR="$2"; shift 2;;
-    --output)   OUTPUT_DIR="$2"; shift 2;;
-    *) shift;;
-  esac
-done
-
 cd "$(dirname "$0")"
 source "$TEMPLATE_DIR/helper.sh"
+source "$TEMPLATE_DIR/helper-template.sh"
+[ -f "$TEMPLATE_DIR/helper-menu.sh" ] && source "$TEMPLATE_DIR/helper-menu.sh"
+[ -f "$TEMPLATE_DIR/helper-filter.sh" ] && source "$TEMPLATE_DIR/helper-filter.sh"
+[ -f "$TEMPLATE_DIR/helper-campaign.sh" ] && source "$TEMPLATE_DIR/helper-campaign.sh"
+
+declare -A _SCHEMA_CACHE
 
 # --- Settings ---
 SITE_JSON="$SETTINGS_DIR/site.json"
 COMPANY_JSON="$SETTINGS_DIR/company.json"
 
-SITE_DOMAIN=$(json_val "$SITE_JSON" domain)
-SITE_CACHE_PREFIX=$(json_val "$SITE_JSON" cachePrefix)
-SITE_LANG=$(json_val "$SITE_JSON" lang)
-SITE_CURRENCY_SYMBOL=$(json_val "$COMPANY_JSON" currencySymbol)
-PAGES_DIR=$(json_val "$SITE_JSON" pagesDir)
+# Read settings files once — no subprocess per field
+_TMP_SC=$(<"$SITE_JSON")
+_TMP_CC=$(<"$COMPANY_JSON")
+jstr "$_TMP_SC" domain;         SITE_DOMAIN="$_JVAL"
+jstr "$_TMP_SC" cachePrefix;    SITE_CACHE_PREFIX="$_JVAL"
+jstr "$_TMP_SC" lang;           SITE_LANG="$_JVAL"
+jstr "$_TMP_CC" currencySymbol; SITE_CURRENCY_SYMBOL="$_JVAL"
+jstr "$_TMP_SC" pagesDir;       PAGES_DIR="$_JVAL"
 [ -z "$PAGES_DIR" ] && PAGES_DIR="pages"
-PRODUCTS_DIR=$(json_val "$SITE_JSON" productsDir)
+jstr "$_TMP_SC" productsDir;    PRODUCTS_DIR="$_JVAL"
 [ -z "$PRODUCTS_DIR" ] && PRODUCTS_DIR="products"
-
-# rootPages as comma-separated string
-ROOT_PAGES=$(sed -n 's/.*"rootPages"[[:space:]]*:[[:space:]]*\[\(.*\)\].*/\1/p' "$SITE_JSON" | tr -d '"[:space:]')
-
-# --- Parts Content Builder ---
-build_main() {
-  local file="$1"
-  grep -q '"parts"' "$file" || return
-
-  local html="" found=0 in_content=0 in_list=0
-
-  while IFS= read -r line; do
-    if [ $found -eq 0 ]; then
-      [[ "$line" == *'"parts"'* ]] && found=1
-      continue
-    fi
-
-    if [[ "$line" =~ ^[[:space:]]*\] ]]; then
-      if [ $in_list -eq 1 ]; then
-        html+="</ul>"; in_list=0
-      elif [ $in_content -eq 1 ]; then
-        in_content=0
-      else
-        break
-      fi
-      continue
-    fi
-
-    if [[ "$line" == *'"title"'* ]]; then
-      local t=$(echo "$line" | sed 's/.*"title"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-      [ -n "$t" ] && html+="<h3>${t}</h3>"
-      continue
-    fi
-
-    [[ "$line" == *'"content"'* ]] && { in_content=1; in_list=0; continue; }
-    [[ "$line" == *'"list"'* ]] && { in_list=1; in_content=0; html+="<ul>"; continue; }
-
-    if [ $in_content -eq 1 ] || [ $in_list -eq 1 ]; then
-      [[ "$line" == *'"'* ]] || continue
-      local v=$(echo "$line" | sed -n 's/^[[:space:]]*"\(.*\)"[[:space:],]*$/\1/p')
-      [ -z "$v" ] && continue
-      [ $in_content -eq 1 ] && html+="<p>${v}</p>"
-      [ $in_list -eq 1 ] && html+="<li>${v}</li>"
-    fi
-  done < "$file"
-
-  printf '%s' "${html//\\\"/\"}"
-}
-
-# --- Contact Builder (E7) ---
-build_contact() {
-  local file="$COMPANY_JSON"
-  local map=$(json_val "$file" map)
-  local phone=$(json_val "$file" phone)
-  local email=$(json_val "$file" email)
-  local tel=$(echo "$phone" | tr -d ' ')
-
-  local legal=$(json_val "$file" legalName)
-
-  local lbl_address=$(json_label address)
-  local lbl_phone=$(json_label phone)
-  local lbl_email=$(json_label email)
-  local lbl_map=$(json_label showOnMap)
-
-  local html="<address>"
-  html+="<h3>${legal}</h3>"
-
-  html+="<div><img src=\"/img/address.png\" alt=\"${lbl_address}\"><p>"
-  local in_addr=0 first=1
-  while IFS= read -r line; do
-    [[ "$line" == *'"address"'* ]] && { in_addr=1; continue; }
-    [ $in_addr -eq 0 ] && continue
-    [[ "$line" == *']'* ]] && break
-    local v=$(echo "$line" | sed -n 's/^[[:space:]]*"\(.*\)"[[:space:],]*$/\1/p')
-    if [ -n "$v" ]; then
-      [ $first -eq 0 ] && html+="<br>"
-      html+="${v}"; first=0
-    fi
-  done < "$file"
-  html+="</p></div>"
-
-  html+="<a href=\"tel:${tel}\"><img src=\"/img/phone.png\" alt=\"${lbl_phone}\"><p>${phone}</p></a>"
-  html+="<a href=\"mailto:${email}\"><img src=\"/img/email.png\" alt=\"${lbl_email}\"><p>${email}</p></a>"
-  [ -n "$map" ] && html+="<a href=\"${map}\" target=\"_blank\"><img src=\"/img/map.png\" alt=\"${lbl_map}\"><p>${lbl_map}</p></a>"
-
-  html+="</address>"
-  printf '%s' "$html"
-}
-
-# --- Sitemap HTML Builder (E8) ---
-build_sitemap_html() {
-  local lbl_pages=$(json_label pages)
-  local lbl_products=$(json_label products)
-
-  local html="<h3>${lbl_pages}</h3><ul>"
-  local entries=""
-  for pj in "$SETTINGS_DIR"/pages/*.json; do
-    local name=$(basename "$pj" .json)
-    [ "$name" = "404" ] && continue
-    local priority=$(json_num "$pj" priority)
-    [ -z "$priority" ] && priority="0.6"
-    local short=$(json_val "$pj" title)
-    short=${short%% |*}
-    local href=$(page_href "$name")
-    entries+="${priority}|<li><a href='${href}'>${short}</a></li>"$'\n'
-  done
-  html+=$(echo "$entries" | sort -t'|' -k1 -rn | cut -d'|' -f2- | tr -d '\n')
-  html+="</ul>"
-
-  html+="<h3>${lbl_products}</h3><ul>"
-  for pj in "$SETTINGS_DIR"/products/*.json; do
-    local name=$(json_val "$pj" name)
-    local url=$(json_val "$pj" url)
-    html+="<li><a href='/${PRODUCTS_DIR}/${url}.html'>${name}</a></li>"
-  done
-  html+="</ul>"
-
-  printf '%s' "$html"
-}
+# rootPages — bash regex on preloaded content (matches across newlines via [^]]*)
+_RR='"rootPages"[[:space:]]*:[[:space:]]*\[([^]]*)\]'
+[[ "$_TMP_SC" =~ $_RR ]] && { ROOT_PAGES="${BASH_REMATCH[1]//\"/}"; ROOT_PAGES="${ROOT_PAGES//[[:space:]]/}"; }
+unset _TMP_SC _TMP_CC _RR
 
 # --- Sitemap XML ---
 build_sitemap_xml() {
   local xml='<?xml version="1.0" encoding="UTF-8"?>'
   xml+='<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
-  local idx_priority=$(json_num "$SETTINGS_DIR/pages/index.json" priority)
-  [ -z "$idx_priority" ] && idx_priority="1.0"
+  local _ipc=$(<"$SETTINGS_DIR/pages/index.json"); jnum "$_ipc" priority; local idx_priority="${_JVAL:-1.0}"
   xml+="<url><loc>${SITE_DOMAIN}/</loc><priority>${idx_priority}</priority></url>"
 
   local entries=""
   for pj in "$SETTINGS_DIR"/pages/*.json; do
-    local name=$(basename "$pj" .json)
-    [ "$name" = "404" ] || [ "$name" = "index" ] && continue
-    local priority=$(json_num "$pj" priority)
-    [ -z "$priority" ] && priority="0.6"
+    local name="${pj##*/}"; name="${name%.json}"
+    { [ "$name" = "404" ] || [ "$name" = "index" ] || [ "$name" = "staff" ] || [ "$name" = "menu" ]; } && continue
+    grep -q '"showInSitemap"[[:space:]]*:[[:space:]]*false' "$pj" && continue
+    local _pc=$(<"$pj"); jnum "$_pc" priority; local priority="${_JVAL:-0.6}"
     entries+="${priority}|<url><loc>${SITE_DOMAIN}/${PAGES_DIR}/${name}.html</loc><priority>${priority}</priority></url>"$'\n'
   done
   xml+=$(echo "$entries" | sort -t'|' -k1 -rn | cut -d'|' -f2-)
 
   for pj in "$SETTINGS_DIR"/products/*.json; do
-    local url=$(json_val "$pj" url)
+    local c=$(<"$pj"); jstr "$c" url; local url="$_JVAL"
     xml+="<url><loc>${SITE_DOMAIN}/${PRODUCTS_DIR}/${url}.html</loc><priority>0.8</priority></url>"
   done
+
+  # Filter pages (categories + tags) — populated by build_filter_pages
+  if type build_filter_pages &>/dev/null; then
+    for entry in "${FILTER_PAGE_CATS[@]}" "${FILTER_PAGE_TAGS[@]}"; do
+      local furl="${entry%%|*}"
+      xml+="<url><loc>${SITE_DOMAIN}/${PAGES_DIR}/${furl}.html</loc><priority>0.5</priority></url>"
+    done
+  fi
 
   xml+='</urlset>'
   printf '%s' "$xml" > "$OUTPUT_DIR/sitemap.xml"
   echo "sitemap.xml built"
 }
 
-# --- Init Layout (E2) ---
+# --- Init Layout ---
 init_layout() {
-  L_EMAIL=$(json_val "$COMPANY_JSON" email)
-  L_LEGAL=$(json_val "$COMPANY_JSON" legalName)
-  L_SLOGAN=$(json_val "$COMPANY_JSON" slogan)
-  L_PHONE=$(json_val "$COMPANY_JSON" phone)
+  local _cc=$(<"$COMPANY_JSON")
+  local _sc=$(<"$SITE_JSON")
+
+  jstr "$_cc" email;          L_EMAIL="$_JVAL"
+  jstr "$_cc" legalName;      L_LEGAL="$_JVAL"
+  jstr "$_cc" slogan;         L_SLOGAN="$_JVAL"
+  jstr "$_cc" phone;          L_PHONE="$_JVAL"
   L_YEAR=$(date +%Y)
-  L_OFFLINE=$(json_val "$SITE_JSON" offlineWarning)
-  L_BRAND=$(json_val "$COMPANY_JSON" brand)
+  jstr "$_sc" offlineWarning; L_OFFLINE="$_JVAL"
+  jstr "$_cc" brand;          L_BRAND="$_JVAL"
+
+  # Pre-cache company schema fields (used by build_schema for every product)
+  jstr "$_cc" currency;            C_CURRENCY="$_JVAL"
+  jnum "$_cc" priceValidUntilDays; C_PVDAYS="${_JVAL:-180}"
+  C_BRAND="$L_BRAND"
+  C_VALID_UNTIL=$(date -d "+${C_PVDAYS} days" +%Y-%m-%d)
+  # Extract manufacturer block once — 1 sed pass instead of 6
+  local _mfr_sec
+  _mfr_sec=$(sed -n '/"manufacturer"/,/^[[:space:]]*}/p' "$COMPANY_JSON")
+  jstr "$_mfr_sec" name;       C_MFR_NAME="$_JVAL"
+  jstr "$_mfr_sec" identifier; C_MFR_ID="$_JVAL"
+  jstr "$_mfr_sec" phone;      C_MFR_PHONE="$_JVAL"
+  jstr "$_mfr_sec" address;    C_MFR_ADDR="$_JVAL"
+  jstr "$_mfr_sec" city;       C_MFR_CITY="$_JVAL"
+  jstr "$_mfr_sec" country;    C_MFR_COUNTRY="$_JVAL"
+
+  # Pre-cache labels section for zero-cost json_label calls
+  _LABELS_SECTION=$(sed -n '/"labels"[[:space:]]*:/,/^[[:space:]]*}/p' "$SITE_JSON")
+
+  # Pre-parse langSwitch entries (used by build_lang_nav and parse_hreflangs)
+  L_SWITCH_CODES=(); L_SWITCH_LABELS=(); L_SWITCH_URLS=()
+  local _in_sw=0 _sw_label="" _sw_url="" _sw_code=""
+  while IFS= read -r line; do
+    [[ "$line" == *'"langSwitch"'* ]] && { _in_sw=1; continue; }
+    [ $_in_sw -eq 0 ] && continue
+    [[ "$line" =~ ^[[:space:]]*\] ]] && { _in_sw=0; break; }
+    jstr "$line" label; [ -n "$_JVAL" ] && _sw_label="$_JVAL"
+    jstr "$line" url;   [ -n "$_JVAL" ] && _sw_url="$_JVAL"
+    jstr "$line" lang;  [ -n "$_JVAL" ] && _sw_code="$_JVAL"
+    if [[ "$line" == *"}"* ]] && [ -n "$_sw_label" ]; then
+      L_SWITCH_CODES+=("$_sw_code")
+      L_SWITCH_LABELS+=("$_sw_label")
+      L_SWITCH_URLS+=("$_sw_url")
+      _sw_label="" _sw_url="" _sw_code=""
+    fi
+  done <<< "$_sc"
+
   parse_hreflangs
 
-  local ig=$(json_val "$COMPANY_JSON" instagram)
-  local fb=$(json_val "$COMPANY_JSON" facebook)
-  local ln=$(json_val "$COMPANY_JSON" linkedin)
-  local wa=$(echo "$L_PHONE" | tr -d '+ ')
-
+  # Social links — inline to avoid $(build_social_links) subshell
+  local _wa="${L_PHONE//[+ ]/}"
+  jstr "$_cc" instagram; local _ig="$_JVAL"
+  jstr "$_cc" facebook;  local _fb="$_JVAL"
+  jstr "$_cc" linkedin;  local _ln="$_JVAL"
+  jstr "$_cc" telegram;  local _tg="${_JVAL#@}"
   L_SOCIAL=""
-  [ "$ig" != "#" ] && L_SOCIAL+="<a href=\"${ig}\" target=\"_blank\"><img src=\"/img/instagram.png\" alt=\"Instagram\"></a>"
-  [ "$fb" != "#" ] && L_SOCIAL+="<a href=\"${fb}\" target=\"_blank\"><img src=\"/img/facebook.png\" alt=\"Facebook\"></a>"
-  [ "$ln" != "#" ] && L_SOCIAL+="<a href=\"${ln}\" target=\"_blank\"><img src=\"/img/linkedin.png\" alt=\"LinkedIn\"></a>"
-  [ -n "$wa" ] && L_SOCIAL+="<a href=\"https://wa.me/${wa}\" target=\"_blank\"><img src=\"/img/whatsapp.png\" alt=\"WhatsApp\"></a>"
+  [ -n "$_ig" ] && [ "$_ig" != "#" ] && L_SOCIAL+="<a href=\"${_ig}\" target=\"_blank\"><img src=\"/img/instagram.png\" alt=\"Instagram\"></a>"
+  [ -n "$_fb" ] && [ "$_fb" != "#" ] && L_SOCIAL+="<a href=\"${_fb}\" target=\"_blank\"><img src=\"/img/facebook.png\" alt=\"Facebook\"></a>"
+  [ -n "$_ln" ] && [ "$_ln" != "#" ] && L_SOCIAL+="<a href=\"${_ln}\" target=\"_blank\"><img src=\"/img/linkedin.png\" alt=\"LinkedIn\"></a>"
+  [ -n "$_wa" ] && L_SOCIAL+="<a href=\"https://wa.me/${_wa}\" target=\"_blank\"><img src=\"/img/whatsapp.png\" alt=\"WhatsApp\"></a>"
+  [ -n "$_tg" ] && [ "$_tg" != "#" ] && L_SOCIAL+="<a href=\"https://t.me/${_tg}\" target=\"_blank\"><img src=\"/img/telegram.png\" alt=\"Telegram\"></a>"
 
   L_FNAV=""
   L_MNAMES=()
   L_MSHORTS=()
   for pj in "$SETTINGS_DIR"/pages/*.json; do
-    local pname=$(basename "$pj" .json)
-    local short=$(json_val "$pj" title)
-    short=${short%% |*}
-    local href=$(page_href "$pname")
+    local pname="${pj##*/}"; pname="${pname%.json}"
+    local _pc=$(<"$pj")
+    jstr "$_pc" title; local short="${_JVAL%% |*}"
+    local href
+    if [[ ",$ROOT_PAGES," == *",$pname,"* ]]; then
+      href="/${pname}.html"
+    else
+      href="/${PAGES_DIR}/${pname}.html"
+    fi
     json_flag "$pj" showOnFooter && L_FNAV+="<a href=\"${href}\">${short}</a>"
     json_flag "$pj" showOnHeaderMenu && { L_MNAMES+=("$pname"); L_MSHORTS+=("$short"); }
   done
-
-}
-
-# --- Language Nav Builder ---
-build_lang_nav() {
-  local path="$1"
-  local html="" in_switch=0
-  local label="" url="" code=""
-
-  while IFS= read -r line; do
-    [[ "$line" == *'"langSwitch"'* ]] && { in_switch=1; continue; }
-    [ $in_switch -eq 0 ] && continue
-    [[ "$line" =~ ^[[:space:]]*\] ]] && break
-
-    local l=$(echo "$line" | sed -n 's/.*"label"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    local u=$(echo "$line" | sed -n 's/.*"url"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    local c=$(echo "$line" | sed -n 's/.*"lang"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-
-    [ -n "$l" ] && label="$l"
-    [ -n "$u" ] && url="$u"
-    [ -n "$c" ] && code="$c"
-
-    if [[ "$line" == *"}"* ]] && [ -n "$label" ]; then
-      if [ "$code" = "$SITE_LANG" ]; then
-        html+="<b>${label}</b>"
-      else
-        html+="<a href=\"${url}${path}\" hreflang=\"${code}\">${label}</a>"
-      fi
-      label="" url="" code=""
-    fi
-  done < "$SITE_JSON"
-
-  [ -n "$html" ] && printf '<span class="lang">%s</span>' "$html"
-}
-
-# --- SEO Helpers (canonical + hreflang) ---
-parse_hreflangs() {
-  L_HREFLANGS=""
-  local in_switch=0
-  local url="" code=""
-
-  while IFS= read -r line; do
-    [[ "$line" == *'"langSwitch"'* ]] && { in_switch=1; continue; }
-    [ $in_switch -eq 0 ] && continue
-    [[ "$line" =~ ^[[:space:]]*\] ]] && break
-
-    local u=$(echo "$line" | sed -n 's/.*"url"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    local c=$(echo "$line" | sed -n 's/.*"lang"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-
-    [ -n "$u" ] && url="$u"
-    [ -n "$c" ] && code="$c"
-
-    if [[ "$line" == *"}"* ]] && [ -n "$code" ] && [ -n "$url" ]; then
-      [ -n "$L_HREFLANGS" ] && L_HREFLANGS+=" "
-      L_HREFLANGS+="${code}|${url}"
-      url="" code=""
-    fi
-  done < "$SITE_JSON"
-}
-
-build_seo_tags() {
-  local path="$1"
-  local canonical="${SITE_DOMAIN}${path}"
-  local html=""
-  for entry in $L_HREFLANGS; do
-    local lang="${entry%%|*}"
-    local domain="${entry#*|}"
-    html+="<link rel=\"alternate\" hreflang=\"${lang}\" href=\"${domain}${path}\">"
-  done
-  printf '%s' "$html"
-}
-
-# --- Header Menu Builder (E3) ---
-build_hmenu() {
-  local active="$1" hmenu=""
-  for i in "${!L_MNAMES[@]}"; do
-    local href=$(page_href "${L_MNAMES[$i]}")
-    if [ "${L_MNAMES[$i]}" = "$active" ]; then
-      hmenu+="<a href=\"${href}\" class=\"active\">${L_MSHORTS[$i]}</a>"
-    else
-      hmenu+="<a href=\"${href}\">${L_MSHORTS[$i]}</a>"
-    fi
-  done
-  printf '%s' "$hmenu"
-}
-
-# --- Hero Builder (H4, H5) ---
-build_hero() {
-  local data_key="$1"
-  local hero_img=$(json_nested "$SITE_JSON" "$data_key" img)
-  local hero_link=$(json_nested "$SITE_JSON" "$data_key" link)
-  local hero_btn=$(json_nested "$SITE_JSON" "$data_key" link_text)
-  local hero_lazy=""
-  json_flag "$SITE_JSON" "$data_key" 2>/dev/null
-  # Check lazy flag within the hero object
-  local lazy_check=$(sed -n '/"'"$data_key"'"/,/}/p' "$SITE_JSON" | grep -c '"lazy"[[:space:]]*:[[:space:]]*true')
-  [ "$lazy_check" -gt 0 ] && hero_lazy="1"
-
-  # Parse text array
-  local hero_line1="" hero_line2=""
-  local text_idx=0
-  while IFS= read -r v || [ -n "$v" ]; do
-    [ -z "$v" ] && continue
-    [ $text_idx -eq 0 ] && hero_line1="$v"
-    [ $text_idx -eq 1 ] && hero_line2="$v"
-    text_idx=$((text_idx + 1))
-  done < <(json_nested_array "$SITE_JSON" "$data_key" text)
-
-  # Build img tag based on lazy flag (H4)
-  local img_tag
-  if [ "$hero_lazy" = "1" ]; then
-    img_tag="<img src=\"$(blur_src "/img/pages/$hero_img")\" data-src=\"/img/pages/$hero_img\" loading=\"lazy\" alt=\"${hero_line1}\">"
-  else
-    img_tag="<img src=\"/img/pages/$hero_img\" alt=\"${hero_line1}\">"
-  fi
-
-  local tpl
-  tpl=$(<"$TEMPLATE_DIR/partials/hero.html")
-  render_template "$tpl" \
-    "hero_img_tag" "$img_tag" \
-    "hero_line1" "$hero_line1" \
-    "hero_line2" "$hero_line2" \
-    "hero_link" "$hero_link" \
-    "hero_btn" "$hero_btn"
-}
-
-# --- Partial Renderer ---
-render_partial() {
-  local partial_spec="$1" page_json="$2"
-  local name="${partial_spec%%:*}"
-  local data_key="${partial_spec#*:}"
-  [ "$data_key" = "$name" ] && data_key=""
-
-  case "$name" in
-    hero)
-      build_hero "$data_key"
-      ;;
-    contact)
-      build_contact
-      ;;
-    product-cards)
-      build_product_cards
-      ;;
-    sitemap-list)
-      build_sitemap_html
-      ;;
-    article-header)
-      # H3: isAllProductsPage uses h4 + slogan, others use h2 + short title
-      local heading_tag="h2"
-      local page_heading
-      if json_flag "$page_json" isAllProductsPage; then
-        heading_tag="h4"
-        page_heading="$L_SLOGAN"
-      else
-        local ptitle=$(json_val "$page_json" title)
-        page_heading="${ptitle%% |*}"
-      fi
-      printf '<article><%s>%s</%s>' "$heading_tag" "$page_heading" "$heading_tag"
-      ;;
-    page-image)
-      # E11: Only render if image file exists
-      local pname=$(basename "$page_json" .json)
-      if [ -f "$OUTPUT_DIR/img/pages/${pname}.webp" ]; then
-        local tpl
-        tpl=$(<"$TEMPLATE_DIR/partials/page-image.html")
-        local ptitle=$(json_val "$page_json" title)
-        local pshort="${ptitle%% |*}"
-        render_template "$tpl" \
-          "name" "$pname" \
-          "page_heading" "$pshort"
-      fi
-      ;;
-    parts)
-      build_main "$page_json"
-      ;;
-    article-footer)
-      printf '</article>'
-      ;;
-    *)
-      local tpl_file="$TEMPLATE_DIR/partials/${name}.html"
-      [ -f "$tpl_file" ] && cat "$tpl_file"
-      ;;
-  esac
-}
-
-# --- Build Main Content from Partials ---
-build_main_content() {
-  local page_json="$1"
-  local html=""
-  local partials=$(sed -n 's/.*"partials"[[:space:]]*:[[:space:]]*\[\(.*\)\].*/\1/p' "$page_json")
-
-  if [ -z "$partials" ]; then
-    return
-  fi
-
-  IFS=',' read -ra part_arr <<< "$partials"
-  for p in "${part_arr[@]}"; do
-    p=$(echo "$p" | tr -d '"[:space:]')
-    html+=$(render_partial "$p" "$page_json")
-  done
-  printf '%s' "$html"
-}
-
-# --- Product Cards Builder (E12) ---
-build_product_cards() {
-  local addToBasket=$(json_label addToBasket)
-  local html="<ul class=\"prd\">"
-
-  for pj in "$SETTINGS_DIR"/products/*.json; do
-    local name=$(json_val "$pj" name)
-    local url=$(json_val "$pj" url)
-    local price=$(json_num "$pj" price)
-    local shortDesc=$(json_val "$pj" shortDesc)
-    local img=$(json_img "$pj")
-    local id=$(json_val "$pj" id)
-
-    html+="<li>"
-    html+="<a href=\"/${PRODUCTS_DIR}/${url}.html\">"
-    html+="<img src=\"/img/products/$(blur_src "$img")\" data-src=\"/img/products/${img}\" loading=\"lazy\" alt=\"${L_BRAND} ${name}\" title=\"${L_BRAND} ${name}\">"
-    html+="<h3>${name}</h3>"
-    html+="</a>"
-    html+="<b>${price} ${SITE_CURRENCY_SYMBOL}</b>"
-    html+="<p>${shortDesc}</p>"
-    html+="<button data-id=\"${id}\">${addToBasket}</button>"
-    html+="</li>"
-  done
-
-  html+="</ul>"
-  printf '%s' "$html"
-}
-
-# --- Tabs Builder ---
-build_tabs() {
-  local pj="$1"
-  local lbl_desc=$(json_label productDescTab)
-  local lbl_specs=$(json_label productSpecsTab)
-
-  local html='<input type="radio" id="tab-desc" name="ptab" checked>'
-  html+='<input type="radio" id="tab-specs" name="ptab">'
-  html+="<div class=\"tab-nav\"><label for=\"tab-desc\">${lbl_desc}</label><label for=\"tab-specs\">${lbl_specs}</label></div>"
-
-  # Tab 1: longDesc paragraphs
-  html+='<div class="tab-desc">'
-  local in_long=0
-  while IFS= read -r line; do
-    [[ "$line" == *'"longDesc"'* ]] && { in_long=1; continue; }
-    [ $in_long -eq 0 ] && continue
-    [[ "$line" == *']'* ]] && break
-    local v=$(echo "$line" | sed -n 's/^[[:space:]]*"\(.*\)"[[:space:],]*$/\1/p')
-    [ -n "$v" ] && html+="<p>${v}</p>"
-  done < "$pj"
-  html+='</div>'
-
-  # Tab 2: otherDesc table
-  html+='<div class="tab-specs"><table>'
-  local in_other=0
-  while IFS= read -r line; do
-    [[ "$line" == *'"otherDesc"'* ]] && { in_other=1; continue; }
-    [ $in_other -eq 0 ] && continue
-    [[ "$line" == *']'* ]] && break
-    local n=$(echo "$line" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    local v=$(echo "$line" | sed -n 's/.*"value"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    [ -n "$n" ] && html+="<tr><th>${n}</th><td>${v}</td></tr>"
-  done < "$pj"
-  html+='</table></div>'
-
-  printf '%s' "$html"
-}
-
-# --- Additional Properties for Schema ---
-build_add_props() {
-  local props="" first=1
-  while IFS= read -r line; do
-    local n=$(echo "$line" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    local v=$(echo "$line" | sed -n 's/.*"value"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-    [ -z "$n" ] && continue
-    [ $first -eq 0 ] && props+=","
-    props+="{\"@type\":\"PropertyValue\",\"name\":\"${n}\",\"value\":\"${v}\"}"
-    first=0
-  done < <(sed -n '/"otherDesc"/,/\]/p' "$1" | grep '"name"')
-  printf '%s' "$props"
-}
-
-# --- Schema Builder ---
-build_schema() {
-  local pj="$1"
-
-  local id=$(json_val "$pj" id)
-  local name=$(json_val "$pj" name)
-  local desc=$(json_val "$pj" metaDesc)
-  local url=$(json_val "$pj" url)
-  local keys=$(json_val "$pj" keywords)
-  local price=$(json_num "$pj" price)
-  local img=$(json_img "$pj")
-  local wval=$(sed -n 's/.*"weight".*"value"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p' "$pj")
-
-  local brand=$(json_val "$pj" brand)
-  [ -z "$brand" ] && brand=$(json_val "$COMPANY_JSON" brand)
-
-  local currency=$(json_val "$pj" currency)
-  [ -z "$currency" ] && currency=$(json_val "$COMPANY_JSON" currency)
-
-  local pvdays=$(json_num "$pj" priceValidUntilDays)
-  [ -z "$pvdays" ] && pvdays=$(json_num "$COMPANY_JSON" priceValidUntilDays)
-  [ -z "$pvdays" ] && pvdays=180
-  local valid_until=$(date -d "+${pvdays} days" +%Y-%m-%d)
-
-  local mfr_name=$(json_nested "$pj" manufacturer name)
-  [ -z "$mfr_name" ] && mfr_name=$(json_nested "$COMPANY_JSON" manufacturer name)
-  local mfr_id=$(json_nested "$pj" manufacturer identifier)
-  [ -z "$mfr_id" ] && mfr_id=$(json_nested "$COMPANY_JSON" manufacturer identifier)
-  local mfr_phone=$(json_nested "$pj" manufacturer phone)
-  [ -z "$mfr_phone" ] && mfr_phone=$(json_nested "$COMPANY_JSON" manufacturer phone)
-  local mfr_addr=$(json_nested "$pj" manufacturer address)
-  [ -z "$mfr_addr" ] && mfr_addr=$(json_nested "$COMPANY_JSON" manufacturer address)
-  local mfr_city=$(json_nested "$pj" manufacturer city)
-  [ -z "$mfr_city" ] && mfr_city=$(json_nested "$COMPANY_JSON" manufacturer city)
-  local mfr_country=$(json_nested "$pj" manufacturer country)
-  [ -z "$mfr_country" ] && mfr_country=$(json_nested "$COMPANY_JSON" manufacturer country)
-
-  # Strip domain protocol for schema URLs (matches original: "ozumle.com/products/...")
-  local schema_domain="${SITE_DOMAIN#https://}"
-  schema_domain="${schema_domain#http://}"
-
-  local s='{"@context":"https://schema.org/","@type":"Product"'
-  s+=',"name":"'"${brand} ${name}"'"'
-  s+=',"productID":"'"${id}"'"'
-  s+=',"description":"'"${desc}"'"'
-  s+=',"url":"'"${schema_domain}/${PRODUCTS_DIR}/${url}"'.html"'
-  s+=',"image":"'"${schema_domain}/images/${img}"'"'
-  s+=',"brand":{"@type":"Brand","name":"'"${brand}"'"}'
-  s+=',"manufacturer":{"@type":"Organization","name":"'"${mfr_name}"'","identifier":"'"${mfr_id}"'"'
-  s+=',"contactPoint":{"@type":"ContactPoint","telephone":"'"${mfr_phone}"'","contactType":"customer service"}'
-  s+=',"address":{"@type":"PostalAddress","streetAddress":"'"${mfr_addr}"'","addressLocality":"'"${mfr_city}"'","addressCountry":"'"${mfr_country}"'"}}'
-  s+=',"keywords":"'"${keys}"'"'
-  [ -n "$wval" ] && s+=',"weight":{"@type":"QuantitativeValue","value":'"${wval}"',"unitCode":"GRM"}'
-
-  local add_props=$(build_add_props "$pj")
-  [ -n "$add_props" ] && s+=',"additionalProperty":['"${add_props}"']'
-
-  s+=',"offers":{"@type":"Offer"'
-  s+=',"url":"'"${schema_domain}/${PRODUCTS_DIR}/${url}"'.html"'
-  s+=',"priceCurrency":"'"${currency}"'"'
-  s+=',"price":"'"${price}"'"'
-  s+=',"priceValidUntil":"'"${valid_until}"'"'
-  s+=',"itemCondition":"https://schema.org/NewCondition"'
-  s+=',"availability":"https://schema.org/InStock"}'
-
-  local ar_val=$(json_nested "$pj" aggregateRating ratingValue)
-  local ar_count=$(json_nested "$pj" aggregateRating reviewCount)
-  if [ -n "$ar_val" ] && [ -n "$ar_count" ]; then
-    local ar_best=$(json_nested "$pj" aggregateRating bestRating)
-    local ar_worst=$(json_nested "$pj" aggregateRating worstRating)
-    s+=',"aggregateRating":{"@type":"AggregateRating"'
-    s+=',"ratingValue":"'"${ar_val}"'","reviewCount":"'"${ar_count}"'"'
-    s+=',"bestRating":"'"${ar_best}"'","worstRating":"'"${ar_worst}"'"}'
-  fi
-
-  local rv_author=$(json_nested "$pj" review author)
-  if [ -n "$rv_author" ]; then
-    local rv_val=$(json_nested "$pj" review ratingValue)
-    local rv_date=$(json_nested "$pj" review date)
-    local rv_body=$(json_nested "$pj" review body)
-    s+=',"review":{"@type":"Review"'
-    s+=',"reviewRating":{"@type":"Rating","ratingValue":"'"${rv_val}"'"}'
-    s+=',"author":{"@type":"Person","name":"'"${rv_author}"'"}'
-    s+=',"datePublished":"'"${rv_date}"'"'
-    s+=',"reviewBody":"'"${rv_body}"'"}'
-  fi
-
-  s+='}'
-  printf '%s' "$s"
-}
-
-# --- Home Page Schema (@graph: Organization + WebSite + ItemList) ---
-build_home_schema() {
-  local phone=$(json_val "$COMPANY_JSON" phone)
-  local tel=$(echo "$phone" | tr -d ' ')
-  local email=$(json_val "$COMPANY_JSON" email)
-  local legal=$(json_val "$COMPANY_JSON" legalName)
-  local desc=$(json_val "$COMPANY_JSON" description)
-  local brand=$(json_val "$COMPANY_JSON" brand)
-
-  # Build address string
-  local addr=""
-  local in_addr=0
-  while IFS= read -r line; do
-    [[ "$line" == *'"address"'* ]] && { in_addr=1; continue; }
-    [ $in_addr -eq 0 ] && continue
-    [[ "$line" == *']'* ]] && break
-    local v=$(echo "$line" | sed -n 's/^[[:space:]]*"\(.*\)"[[:space:],]*$/\1/p')
-    [ -n "$v" ] && { [ -n "$addr" ] && addr+=", "; addr+="$v"; }
-  done < "$COMPANY_JSON"
-
-  # Social links
-  local ig=$(json_val "$COMPANY_JSON" instagram)
-  local sameAs=""
-  [ -n "$ig" ] && [ "$ig" != "#" ] && sameAs+="\"${ig}\""
-
-  local s='{"@context":"https://schema.org","@graph":['
-
-  # Organization
-  s+='{"@type":"Organization"'
-  s+=',"name":"'"${legal}"'"'
-  s+=',"url":"'"${SITE_DOMAIN}"'"'
-  s+=',"logo":"'"${SITE_DOMAIN}/logo.png"'"'
-  s+=',"description":"'"${desc}"'"'
-  s+=',"brand":{"@type":"Brand","name":"'"${brand}"'"}'
-  s+=',"telephone":"'"${tel}"'"'
-  s+=',"email":"'"${email}"'"'
-  s+=',"address":{"@type":"PostalAddress","streetAddress":"'"${addr}"'","addressCountry":"TR"}'
-  [ -n "$sameAs" ] && s+=',"sameAs":['"${sameAs}"']'
-  s+='}'
-
-  # WebSite
-  s+=',{"@type":"WebSite"'
-  s+=',"name":"'"${brand}"'"'
-  s+=',"url":"'"${SITE_DOMAIN}"'"}'
-
-  # ItemList with Products
-  s+=',{"@type":"ItemList","itemListElement":['
-  local pos=0 first=1
-  for pj in "$SETTINGS_DIR"/products/*.json; do
-    pos=$((pos + 1))
-    [ $first -eq 0 ] && s+=","
-    first=0
-    local ps=$(build_schema "$pj")
-    ps=$(echo "$ps" | sed 's|{"@context":"https://schema.org/",|{|')
-    s+='{"@type":"ListItem","position":'"${pos}"',"item":'"${ps}"'}'
-  done
-  s+=']}]}'
-
-  printf '%s' "$s"
 }
 
 # --- Build Pages ---
@@ -651,45 +156,34 @@ build_pages() {
   mkdir -p "$OUTPUT_DIR/$PAGES_DIR"
 
   for pj in "$SETTINGS_DIR"/pages/*.json; do
-    local name=$(basename "$pj" .json)
-    local title=$(json_val "$pj" title)
-    local desc=$(json_val "$pj" description)
-    local keys=$(json_val "$pj" keywords)
-    local hmenu=$(build_hmenu "$name")
+    local name="${pj##*/}"; name="${name%.json}"
+    local _pc=$(<"$pj")
+    jstr "$_pc" title;       local title="$_JVAL"
+    jstr "$_pc" description; local desc="$_JVAL"
+    jstr "$_pc" keywords;    local keys="$_JVAL"
+    build_hmenu "$name"; local hmenu="$_HMENU"
     local main_html=$(build_main_content "$pj")
-    local out_path=$(page_output_path "$name")
 
-    local seo_path
-    if [ "$name" = "index" ]; then seo_path="/"; else seo_path=$(page_href "$name"); fi
+    local out_path seo_path
+    if [[ ",$ROOT_PAGES," == *",$name,"* ]]; then
+      out_path="${OUTPUT_DIR}/${name}.html"
+      seo_path="/${name}.html"
+    else
+      out_path="${OUTPUT_DIR}/${PAGES_DIR}/${name}.html"
+      seo_path="/${PAGES_DIR}/${name}.html"
+    fi
+    [ "$name" = "index" ] && seo_path="/"
     local canonical="${SITE_DOMAIN}${seo_path}"
-    local hreflang=$(build_seo_tags "$seo_path")
-    local lang_nav=$(build_lang_nav "$seo_path")
+    build_seo_tags "$seo_path"; local hreflang="$_SEO_TAGS"
+    build_lang_nav "$seo_path"; local lang_nav="$_LANG_NAV"
 
     local extra=""
     if [ "$name" = "index" ]; then
       local schema=$(build_home_schema)
-      schema=$(printf '%s' "$schema" | sed 's/&/\\&/g')
       extra=$'\n    '"<script type=\"application/ld+json\">${schema}</script>"
     fi
 
-    apply_layout "$TEMPLATE_DIR/layout.html" \
-      "lang" "$SITE_LANG" \
-      "title" "$title" \
-      "description" "$desc" \
-      "keywords" "$keys" \
-      "canonical" "$canonical" \
-      "hreflang" "$hreflang" \
-      "lang_nav" "$lang_nav" \
-      "nav" "$hmenu" \
-      "main" "$main_html" \
-      "offline_warning" "$L_OFFLINE" \
-      "social" "$L_SOCIAL" \
-      "email" "$L_EMAIL" \
-      "copyright" "${L_LEGAL} © ${L_YEAR}" \
-      "footer_nav" "$L_FNAV" \
-      "slogan" "$L_SLOGAN" \
-      "extra_scripts" "$extra" \
-      > "$out_path"
+    write_html_page "$out_path" "$title" "$desc" "$keys" "$canonical" "$hreflang" "$lang_nav" "$hmenu" "$main_html" "$extra"
   done
 
   echo "pages built"
@@ -697,9 +191,9 @@ build_pages() {
 
 # --- Build Products (E6) ---
 build_products() {
-  local addToBasket=$(json_label addToBasket)
-  local taxIncluded=$(json_val "$SITE_JSON" taxIncluded)
-  local hmenu=$(build_hmenu "")
+  json_label addToBasket; local addToBasket="$_JVAL"
+  local _st=$(<"$SITE_JSON"); jstr "$_st" taxIncluded; local taxIncluded="$_JVAL"
+  build_hmenu ""; local hmenu="$_HMENU"
 
   mkdir -p "$OUTPUT_DIR/$PRODUCTS_DIR"
 
@@ -707,31 +201,32 @@ build_products() {
   product_tpl=$(<"$TEMPLATE_DIR/partials/product.html")
 
   for pj in "$SETTINGS_DIR"/products/*.json; do
-    local id=$(json_val "$pj" id)
-    local name=$(json_val "$pj" name)
-    local url=$(json_val "$pj" url)
-    local price=$(json_num "$pj" price)
-    local desc=$(json_val "$pj" metaDesc)
-    local keys=$(json_val "$pj" keywords)
-    local img=$(json_img "$pj")
+    local c=$(<"$pj")
+    jstr "$c" id;       local id="$_JVAL"
+    jstr "$c" name;     local name="$_JVAL"
+    jstr "$c" url;      local url="$_JVAL"
+    jnum "$c" price;    local price="$_JVAL"
+    jstr "$c" metaDesc; local desc="$_JVAL"
+    jstr "$c" keywords; local keys="$_JVAL"
+    jimg "$c";          local img="$_JVAL"
     local title="${L_BRAND} ${name} | ${L_BRAND}"
 
     local seo_path="/${PRODUCTS_DIR}/${url}.html"
     local canonical="${SITE_DOMAIN}${seo_path}"
-    local hreflang=$(build_seo_tags "$seo_path")
-    local lang_nav=$(build_lang_nav "$seo_path")
+    build_seo_tags "$seo_path"; local hreflang="$_SEO_TAGS"
+    build_lang_nav "$seo_path"; local lang_nav="$_LANG_NAV"
 
-    local schema=$(build_schema "$pj")
-    # Escape & for sed safety
-    schema=$(printf '%s' "$schema" | sed 's/&/\\&/g')
+    local schema="${_SCHEMA_CACHE[$pj]}"
 
-    local tabs=$(build_tabs "$pj")
-    tabs=$(printf '%s' "$tabs" | sed 's/&/\\&/g')
+    local meta_tags=""
+    type build_product_meta_tags &>/dev/null && json_flag "$SITE_JSON" isFiltering \
+      && meta_tags=$(build_product_meta_tags "$c")
 
-    local blur=$(blur_src "$img")
+    build_tabs "$pj"; local tabs="$_TABS"
 
-    local product_html
-    product_html=$(render_template "$product_tpl" \
+    local blur="${img%.webp}-k.webp"
+
+    render_template "$product_tpl" \
       "product_img" "$img" \
       "product_blur" "$blur" \
       "product_full_name" "${L_BRAND} ${name}" \
@@ -741,28 +236,13 @@ build_products() {
       "currency_symbol" "$SITE_CURRENCY_SYMBOL" \
       "tax_label" "$taxIncluded" \
       "add_to_basket" "$addToBasket" \
-      "tabs" "$tabs")
+      "tabs" "$tabs" \
+      "product_meta_tags" "$meta_tags"
+    local product_html="$_RENDERED"
 
     local schema_script=$'\n    '"<script type=\"application/ld+json\">${schema}</script>"
 
-    apply_layout "$TEMPLATE_DIR/layout.html" \
-      "lang" "$SITE_LANG" \
-      "title" "$title" \
-      "description" "$desc" \
-      "keywords" "$keys" \
-      "canonical" "$canonical" \
-      "hreflang" "$hreflang" \
-      "lang_nav" "$lang_nav" \
-      "nav" "$hmenu" \
-      "main" "$product_html" \
-      "offline_warning" "$L_OFFLINE" \
-      "social" "$L_SOCIAL" \
-      "email" "$L_EMAIL" \
-      "copyright" "${L_LEGAL} © ${L_YEAR}" \
-      "footer_nav" "$L_FNAV" \
-      "slogan" "$L_SLOGAN" \
-      "extra_scripts" "$schema_script" \
-      > "$OUTPUT_DIR/$PRODUCTS_DIR/${url}.html"
+    write_html_page "$OUTPUT_DIR/$PRODUCTS_DIR/${url}.html" "$title" "$desc" "$keys" "$canonical" "$hreflang" "$lang_nav" "$hmenu" "$product_html" "$schema_script"
   done
 
   echo "products built"
@@ -770,27 +250,30 @@ build_products() {
 
 # --- Service Worker Builder ---
 build_sw() {
-  local core="'/','/site.css','/site.js','/logo.png','/favicon.png','/favicon.ico'"
+  local core="\"/\",\"/site.css\",\"/site.js\",\"/logo.png\",\"/favicon.png\",\"/favicon.ico\""
 
   local products=""
   for f in "$OUTPUT_DIR/$PRODUCTS_DIR"/*.html; do
-    [ -f "$f" ] && products+=",'/${PRODUCTS_DIR}/$(basename "$f")'"
+    [ -f "$f" ] && products+=",\"/${PRODUCTS_DIR}/${f##*/}\""
   done
   for f in "$OUTPUT_DIR"/img/products/*.webp; do
-    [ -f "$f" ] && products+=",'/img/products/$(basename "$f")'"
+    [ -f "$f" ] && products+=",\"/img/products/${f##*/}\""
   done
   products=${products#,}
 
   local pages=""
   for f in "$OUTPUT_DIR/$PAGES_DIR"/*.html; do
-    [ -f "$f" ] && pages+=",'/${PAGES_DIR}/$(basename "$f")'"
+    [ -f "$f" ] && pages+=",\"/${PAGES_DIR}/${f##*/}\""
   done
-  pages+=",'/index.html','/404.html'"
+  pages+=",\"/index.html\",\"/404.html\""
   for f in "$OUTPUT_DIR"/img/*.png; do
-    [ -f "$f" ] && pages+=",'/img/$(basename "$f")'"
+    [ -f "$f" ] && pages+=",\"/img/${f##*/}\""
   done
   for f in "$OUTPUT_DIR"/img/pages/*.webp; do
-    [ -f "$f" ] && pages+=",'/img/pages/$(basename "$f")'"
+    [ -f "$f" ] && pages+=",\"/img/pages/${f##*/}\""
+  done
+  for f in "$OUTPUT_DIR"/img/campaign/*; do
+    [ -f "$f" ] && pages+=",\"/img/campaign/${f##*/}\""
   done
   pages=${pages#,}
 
@@ -802,23 +285,34 @@ build_sw() {
     -e "s#__PRODUCTS__#[${products}]#" \
     -e "s#__PAGES__#[${pages}]#" \
     -e "s#__VERSION__#${version}#" \
-    -e "s#'#\"#g" \
     "$TEMPLATE_DIR/js/sw.js" > "$OUTPUT_DIR/sw.js"
 
   echo "sw.js built"
 }
 
-# --- Product Catalog Injection (E1) ---
+# --- Schema Pre-computation ---
+precompute_schemas() {
+  for pj in "$SETTINGS_DIR"/products/*.json; do
+    build_schema "$pj"
+    _SCHEMA_CACHE["$pj"]="$_SCHEMA"
+  done
+  echo "schemas precomputed"
+}
+
+# --- Product Catalog Injection ---
 inject_product_catalog() {
   local js="let PRODUCTS={"
   local first=1
+  local _rw='"weight"[^}]*"value"[[:space:]]*:[[:space:]]*([0-9]+)'
 
   for pj in "$SETTINGS_DIR"/products/*.json; do
-    local id=$(json_val "$pj" id)
-    local name=$(json_val "$pj" name)
-    local price=$(json_num "$pj" price)
-    local wval=$(sed -n 's/.*"weight".*"value"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p' "$pj")
-    local img=$(json_img "$pj")
+    local c=$(<"$pj")
+    jstr "$c" id;    local id="$_JVAL"
+    jstr "$c" name;  local name="$_JVAL"
+    jnum "$c" price; local price="$_JVAL"
+    jimg "$c";       local img="$_JVAL"
+    local wval=0
+    [[ "$c" =~ $_rw ]] && wval="${BASH_REMATCH[1]}"
 
     [ $first -eq 0 ] && js+=","
     js+="\"${id}\":{\"name\":\"${name}\",\"price\":${price},\"weight\":${wval},\"img\":\"${img}\"}"
@@ -826,34 +320,71 @@ inject_product_catalog() {
   done
 
   js+="};"
-  sed -i "s#let PRODUCTS = {};#${js}#" "$OUTPUT_DIR/site.js"
+  sed -i "s#let PRODUCTS = {};#$(sed_safe "$js")#" "$OUTPUT_DIR/site.js"
   echo "product catalog injected"
 }
 
 # --- Basket Config Injection ---
 inject_basket_config() {
-  local warning=$(json_val "$SITE_JSON" basketWarning)
-  local wa_warning=$(json_val "$SITE_JSON" whatsAppWarning)
-  local shipping_warning=$(json_val "$SITE_JSON" shippingWarning)
-  local wa_number=$(echo "$(json_val "$COMPANY_JSON" phone)" | tr -d '+ ')
+  local _sc=$(<"$SITE_JSON")
+  local payment_options_json="[]"
+  local _rpa='"paymentOptions"[[:space:]]*:[[:space:]]*(\[[^]]*\])'
+  [[ "$_sc" =~ $_rpa ]] && payment_options_json="${BASH_REMATCH[1]}"
+  local _cc=$(<"$COMPANY_JSON")
+  jstr "$_cc" timezone; local site_timezone="$_JVAL"
+  jstr "$_sc" basketWarning;   local warning="$_JVAL"
+  jstr "$_sc" whatsAppWarning; local wa_warning="$_JVAL"
+  jstr "$_sc" shippingWarning; local shipping_warning="$_JVAL"
+  jstr "$_cc" phone;           local _phone="$_JVAL"; local wa_number="${_phone//[+ ]/}"
+  jstr "$_cc" telegram;        local _tg_raw="$_JVAL"; local tg_username="${_tg_raw#@}"
 
-  local products_page=$(json_val "$SITE_JSON" productsPage)
-  [ -z "$products_page" ] && products_page="/${PAGES_DIR}/urunlerimiz.html"
+  jstr "$_sc" productsPage; local products_page="$_JVAL"
+  if [ -z "$products_page" ]; then
+    for pj in "$SETTINGS_DIR"/pages/*.json; do
+      if json_flag "$pj" isAllProductsPage; then
+        local _pn="${pj##*/}"; _pn="${_pn%.json}"
+        if [[ ",$ROOT_PAGES," == *",$_pn,"* ]]; then
+          products_page="/${_pn}.html"
+        else
+          products_page="/${PAGES_DIR}/${_pn}.html"
+        fi
+        break
+      fi
+    done
+  fi
+
+  local is_basket_desc="false"
+  json_flag "$SITE_JSON" isBasketDesc && is_basket_desc="true"
 
   local js="let BASKET_CONFIG={"
   js+="\"warning\":\"${warning}\""
   js+=",\"waWarning\":\"${wa_warning}\""
   js+=",\"shippingWarning\":\"${shipping_warning}\""
+  js+=",\"isBasketDesc\":${is_basket_desc}"
+  js+=",\"paymentOptions\":${payment_options_json}"
   js+=",\"currency\":\"${SITE_CURRENCY_SYMBOL}\""
   js+=",\"waNumber\":\"${wa_number}\""
   js+=",\"productsPage\":\"${products_page}\""
+  if json_flag "$SITE_JSON" isTelegramOrder; then
+    if [ -n "$tg_username" ] && [ "$tg_username" != "#" ]; then
+      js+=",\"tgUsername\":\"${tg_username}\""
+    else
+      echo ""
+      echo "WARNING: isTelegramOrder is true but company telegram info should be added"
+      echo ""
+    fi
+  fi
+
+  if [ -n "$site_timezone" ]; then
+    js+=",\"timezone\":\"${site_timezone}\""
+  fi
 
   # Build labels object
   js+=",\"labels\":{"
   local first=1
-  local label_keys="addToBasket basket myBasket itemSuffix for openBasket closeBasket subtotal shipping freeShipping total delete unit whatsAppOrder whatsAppGreeting emptyBasket productsLinkText emptyBasketDesc"
+  local label_keys="addToBasket basket myBasket itemSuffix for openBasket closeBasket subtotal shipping freeShipping total delete unit whatsAppOrder whatsAppGreeting telegramOrder telegramGreeting emptyBasket productsLinkText emptyBasketDesc waiterLabel tableLabel basketDescPlaceholder basketDescTooltip paymentLabel noteLabel happyHourTimezoneWarning discountProgressPrefix discountProgressSuffix"
   for k in $label_keys; do
-    local v=$(json_label "$k")
+    json_label "$k"; local v="$_JVAL"
     if [ -n "$v" ]; then
       [ $first -eq 0 ] && js+=","
       js+="\"${k}\":\"${v}\""
@@ -862,7 +393,7 @@ inject_basket_config() {
   done
   js+="}}"
 
-  sed -i "s#let BASKET_CONFIG = {};#${js};#" "$OUTPUT_DIR/site.js"
+  sed -i "s#let BASKET_CONFIG = {};#$(sed_safe "$js");#" "$OUTPUT_DIR/site.js"
   echo "basket config injected"
 }
 
@@ -870,11 +401,25 @@ inject_basket_config() {
 # MAIN EXECUTION (E5: preserved order)
 # ============================================
 
-bash "$TEMPLATE_DIR/process-template.sh" "$TEMPLATE_DIR" "$SETTINGS_DIR" "$OUTPUT_DIR"
+bash "$TEMPLATE_DIR/process-template.sh" "$TEMPLATE_DIR" "$SETTINGS_DIR" "$OUTPUT_DIR" \
+  || { echo "ERROR: process-template.sh failed"; exit 1; }
+
+grep -q 'let PRODUCTS = {};' "$OUTPUT_DIR/site.js" \
+  || { echo "ERROR: PRODUCTS placeholder missing in site.js"; exit 1; }
+grep -q 'let BASKET_CONFIG = {};' "$OUTPUT_DIR/site.js" \
+  || { echo "ERROR: BASKET_CONFIG placeholder missing in site.js"; exit 1; }
+grep -q 'let CAMPAIGN_CONFIG = \[\];' "$OUTPUT_DIR/site.js" \
+  || { echo "ERROR: CAMPAIGN_CONFIG placeholder missing in site.js"; exit 1; }
+
 inject_product_catalog
-inject_basket_config
 init_layout
+inject_basket_config
+precompute_schemas
+type build_menu &>/dev/null && build_menu
+type inject_campaign_config &>/dev/null && inject_campaign_config
+type build_campaigns_html &>/dev/null && build_campaigns_html
 build_pages
 build_products
+type build_filter_pages &>/dev/null && build_filter_pages
 build_sitemap_xml
 build_sw

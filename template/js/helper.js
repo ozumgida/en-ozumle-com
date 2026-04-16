@@ -1,3 +1,12 @@
+var IS_MOBILE = (function () {
+  var dataString = [navigator.userAgent, navigator.vendor, navigator.platform, window.opera, ''].join(' ');
+  var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Mobi|iOS|CriOS|FxiOS|CFNetwork|UCBrowser|Silk|Kindle|Tablet|Mac.*Mobile|MacIntel|Phone|samsung|SAMSUNG/i;
+  var isMobileDevice = mobileRegex.test(dataString);
+  var hasTouchPoints = navigator.maxTouchPoints > 0;
+  var hasTouchEvents = 'ontouchstart' in window || 'ontouchend' in document;
+  return isMobileDevice || hasTouchPoints || hasTouchEvents;
+})();
+
 function _el(tag, cls) {
   let e = document.createElement(tag);
   if (cls) { e.className = cls; }

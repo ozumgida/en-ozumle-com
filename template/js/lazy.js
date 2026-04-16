@@ -6,14 +6,25 @@
     for (let i = 0; i < entries.length; i++) {
       if (entries[i].isIntersecting) {
         let img = entries[i].target;
-        let real = new Image();
-        real.onload = function() {
-          this._target.src = this._target.dataset.src;
-          this._target.removeAttribute("data-src");
-        };
-        real._target = img;
-        real.src = img.dataset.src;
+        let fullSrc = img.dataset.src;
         observer.unobserve(img);
+
+        (window.caches
+          ? caches.match(fullSrc)
+          : Promise.resolve(null)
+        ).then(function(cached) {
+          if (cached) {
+            img.src = fullSrc;
+            img.removeAttribute("data-src");
+          } else {
+            let real = new Image();
+            real.onload = function() {
+              img.src = fullSrc;
+              img.removeAttribute("data-src");
+            };
+            real.src = fullSrc;
+          }
+        });
       }
     }
   });

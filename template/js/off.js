@@ -2,7 +2,7 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
   navigator.serviceWorker.ready.then(function(reg) {
     setTimeout(function() {
-      reg.active.postMessage("cache-all");
+      if (reg.active) { reg.active.postMessage("cache-all"); }
     }, 60000);
   });
 }
