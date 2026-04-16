@@ -1135,6 +1135,7 @@ margin: 0.75rem auto 0.25rem;
 #basket .payment-radios {
 display: flex;
 flex-direction: row;
+justify-content: center;
 gap: 0.4rem 1rem;
 }
 #basket .payment-radios label {
