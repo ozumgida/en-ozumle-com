@@ -6,7 +6,7 @@
     { "label": "TR", "url": "https://ozumle.com", "lang": "tr" },
     { "label": "EN", "url": "https://en.ozumle.com", "lang": "en" }
   ],
-  "rootPages": ["index", "404", "menu", "staff"],
+  "rootPages": ["index", "404"],
   "pagesDir": "pages",
   "productsDir": "products",
 
@@ -87,6 +87,7 @@
     "noteLabel": "Note",
     "happyHourTimezoneWarning": "This discount is based on restaurant time. Your device clock may differ.",
     "discountProgressPrefix": "more for a",
-    "discountProgressSuffix": "discount"
+    "discountProgressSuffix": "discount",
+    "notForOnlineOrder": "Not available for online orders"
   }
 }

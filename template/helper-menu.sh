@@ -53,7 +53,13 @@ build_product_cards_all() {
 # --- Build Menu Page ---
 build_menu() {
   local menu_json="$SETTINGS_DIR/menu.json"
-  [ ! -f "$menu_json" ] && return
+  if [ ! -f "$menu_json" ]; then
+    if [ -f "$OUTPUT_DIR/menu.html" ]; then
+      rm -f "$OUTPUT_DIR/menu.html"
+      echo "menu.html removed (orphan)"
+    fi
+    return 0
+  fi
 
   local _mj=$(<"$menu_json"); jstr "$_mj" title; local title="$_JVAL"
   local main_html=$(build_product_cards_all)

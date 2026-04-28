@@ -5,5 +5,5 @@
   "showOnHeaderMenu": true,
   "isAllProductsPage": true,
   "priority": 0.7,
-  "partials": ["article-header", "campaign-strip", "page-image", "parts", "product-cards", "article-footer"]
+  "partials": ["article-header", "page-image", "parts", "product-cards", "article-footer"]
 }

@@ -76,6 +76,13 @@ build_menu_css() {
   local menu_css_src=$(json_val "$SITE_JSON" menuCss)
   local menu_css_output=$(json_val "$SITE_JSON" menuCssOutput)
   [ -z "$menu_css_src" ] || [ -z "$menu_css_output" ] && return
+  if [ ! -f "$SETTINGS_DIR/menu.json" ]; then
+    if [ -f "$OUTPUT_DIR/$menu_css_output" ]; then
+      rm -f "$OUTPUT_DIR/$menu_css_output"
+      echo "$menu_css_output removed (orphan)"
+    fi
+    return 0
+  fi
   min "$TEMPLATE_DIR/$menu_css_src" > "$OUTPUT_DIR/$menu_css_output"
   echo "menu.css built"
 }

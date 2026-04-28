@@ -61,7 +61,8 @@ window.WAITER_NAME = localStorage.getItem('waiter') || '';
       if (prod) {
         items.push({
           id: id, name: prod.name, price: prod.price,
-          weight: prod.weight, img: prod.img, quantity: cart[id]
+          weight: prod.weight, img: prod.img, quantity: cart[id],
+          ord: prod.ord
         });
       }
     }
@@ -446,6 +447,9 @@ window.WAITER_NAME = localStorage.getItem('waiter') || '';
       qc.append(qMinus, txt(span, item.quantity), qPlus);
 
       row.append(del, img("/img/products/" + item.img, item.name), txt(b, item.name), qc, txt(span, fmt(lineTotal) + " " + currencySymbol));
+      if (item.ord === 0) {
+        row.append(txt(small, L("notForOnlineOrder"), "not-for-order"));
+      }
       itemsEl.append(row);
     }
 

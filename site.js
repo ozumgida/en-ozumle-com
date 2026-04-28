@@ -116,7 +116,7 @@ e.setAttribute("data-id", id);
 return e;
 }
 let PRODUCTS={"p1000":{"name":"Erzincan Tulum Cheese 1 kg","price":600,"weight":1000,"img":"erzincan-tulum-peyniri-1000gr.webp"},"p500":{"name":"Erzincan Tulum Cheese 500 gr","price":300,"weight":500,"img":"erzincan-tulum-peyniri-500gr.webp"},"yt900":{"name":"Salted Butter 900 gr","price":580,"weight":900,"img":"tuzlu-tereyagi-900gr.webp"},"y500":{"name":"Unsalted Butter 500 gr","price":290,"weight":500,"img":"tuzsuz-tereyagi-500gr.webp"}};
-let BASKET_CONFIG={"warning":"After adding products to your cart,<br/>click the 'Send Order via WhatsApp' button<br/>to quickly submit your order and shipping details,<br/>and easily complete your purchase.","waWarning":"If you don't use WhatsApp,<br/>you can reach us at info@ozumgida.com for orders and inquiries.","shippingWarning":"","isBasketDesc":false,"paymentOptions":["Ödeme Linki"],"currency":"₺","waNumber":"905409063518","productsPage":"/pages/urunlerimiz.html","timezone":"Europe/Istanbul","labels":{"addToBasket":"Add to Cart","basket":"Cart","myBasket":"My Cart","itemSuffix":"item(s)","for":"for","openBasket":"Open Cart","closeBasket":"Close Cart","subtotal":"Subtotal","shipping":"Shipping","freeShipping":"Free","total":"Total","delete":"Delete","unit":"Qty","whatsAppOrder":"Send Order via WhatsApp","whatsAppGreeting":"🛒 Order Details","telegramOrder":"Send Order via Telegram","telegramGreeting":"🛒 Order Details","emptyBasket":"Your cart is empty","productsLinkText":"Our Products","emptyBasketDesc":"page to browse and add products you like.","waiterLabel":"Waiter","tableLabel":"Table","basketDescPlaceholder":"Add a note (optional)","basketDescTooltip":"If you have anything more to specify, you can also message us directly on WhatsApp.","paymentLabel":"Payment Method","noteLabel":"Note","happyHourTimezoneWarning":"This discount is based on restaurant time. Your device clock may differ.","discountProgressPrefix":"more for a","discountProgressSuffix":"discount"}};
+let BASKET_CONFIG={"warning":"After adding products to your cart,<br/>click the 'Send Order via WhatsApp' button<br/>to quickly submit your order and shipping details,<br/>and easily complete your purchase.","waWarning":"If you don't use WhatsApp,<br/>you can reach us at info@ozumgida.com for orders and inquiries.","shippingWarning":"","isBasketDesc":false,"paymentOptions":["Ödeme Linki"],"currency":"₺","waNumber":"905409063518","productsPage":"/pages/urunlerimiz.html","timezone":"Europe/Istanbul","labels":{"addToBasket":"Add to Cart","basket":"Cart","myBasket":"My Cart","itemSuffix":"item(s)","for":"for","openBasket":"Open Cart","closeBasket":"Close Cart","subtotal":"Subtotal","shipping":"Shipping","freeShipping":"Free","total":"Total","delete":"Delete","unit":"Qty","whatsAppOrder":"Send Order via WhatsApp","whatsAppGreeting":"🛒 Order Details","telegramOrder":"Send Order via Telegram","telegramGreeting":"🛒 Order Details","emptyBasket":"Your cart is empty","productsLinkText":"Our Products","emptyBasketDesc":"page to browse and add products you like.","waiterLabel":"Waiter","tableLabel":"Table","basketDescPlaceholder":"Add a note (optional)","basketDescTooltip":"If you have anything more to specify, you can also message us directly on WhatsApp.","paymentLabel":"Payment Method","noteLabel":"Note","happyHourTimezoneWarning":"This discount is based on restaurant time. Your device clock may differ.","discountProgressPrefix":"more for a","discountProgressSuffix":"discount","notForOnlineOrder":"Not available for online orders"}};
 let CAMPAIGN_CONFIG=[{"type": "free_shipping", "label": "Free Shipping on orders of 15 kg and above!", "messageLine": "Free Shipping Campaign", "img": "free-shiping-over-15kg.png", "addProducts": [{"id": "p1000", "qty": 6}, {"id": "p500", "qty": 6}, {"id": "yt900", "qty": 4}, {"id": "y500", "qty": 5}], "conditions": [{"minWeight": 15, "hintTemplate": "Add {remaining} kg more for free shipping!"}]}];
 window.TABLE_NO = (new URLSearchParams(location.search)).get('t') || '';
 window.WAITER_NAME = localStorage.getItem('waiter') || '';
@@ -171,7 +171,8 @@ let prod = PRODUCTS[id];
 if (prod) {
 items.push({
 id: id, name: prod.name, price: prod.price,
-weight: prod.weight, img: prod.img, quantity: cart[id]
+weight: prod.weight, img: prod.img, quantity: cart[id],
+ord: prod.ord
 });
 }
 }
@@ -519,6 +520,9 @@ let qMinus = actionImg("/img/minus.png", "-", "minus", item.id);
 let qPlus = actionImg("/img/plus.png", "+", "plus", item.id);
 qc.append(qMinus, txt(span, item.quantity), qPlus);
 row.append(del, img("/img/products/" + item.img, item.name), txt(b, item.name), qc, txt(span, fmt(lineTotal) + " " + currencySymbol));
+if (item.ord === 0) {
+row.append(txt(small, L("notForOnlineOrder"), "not-for-order"));
+}
 itemsEl.append(row);
 }
 let totalQty = 0;

@@ -535,3 +535,13 @@ ul.prd button.qty-ctrl,
   border-radius: 8px;
   display: block;
 }
+
+/* Online-order-disabled warning */
+#basket .items small.not-for-order {
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #b33a3a;
+  text-align: right;
+  margin-top: -0.2rem;
+}
